@@ -1,0 +1,34 @@
+
+div.param .form-control{
+    display: inline-block;
+    width:auto;
+}
+
+.table-sm td, .table-sm th {
+    padding: 0.3rem;
+}
+
+
+.card.sample img{
+    max-height: 180px;
+}
+
+th.pv.primary {
+    color: #337ab7;
+}
+
+td.right, th.right {
+    border-right: 2px solid #ddd;
+}
+
+td.left, th.left {
+    border-left: 2px solid #ddd;
+}
+
+#div_sample img {
+    max-width: 100%;
+}
+
+#div_sample h3{
+    font-size: 14pt;
+}

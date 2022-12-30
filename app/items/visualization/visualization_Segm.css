@@ -1,0 +1,45 @@
+#div_canvas_gt{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 30px;
+    bottom: 0px;    
+}
+#div_canvas_det{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 30px;
+    bottom: 0px; 
+}
+
+div.container_canvas{
+    width: 50%;
+    vertical-align: top;
+    position: relative;
+    height: 400px;
+    display: inline-block;  
+    border: 1px solid #999;
+    box-sizing: border-box;
+}
+div.container_canvas h3, #div_sample_info h3{
+    margin: 0px;
+    padding: 0px 10px;
+    background-color: #eee;
+    border-bottom: 1px solid #999;
+    line-height: 29px;
+}
+
+
+#div_sample img{
+    display: none;
+}
+
+#div_sample_info{
+    display: flex;
+}
+
+.div_log{
+    height: 300px;
+    overflow: auto;
+}

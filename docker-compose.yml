@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  rrcconfig:
+    build: .  
+    volumes:    
+      - ${GT_VOL_PATH}:/var/www/gt
+      - ${SUBMITS_VOL_PATH}:/var/www/submits
+      - ${SCRIPS_VOL_PATH}:/code/scripts
+    ports:
+      - "9010:80"
+    restart: ${RESTART}
+
+  rrceval:
+    build: ./dockers/python3.9/Dockerfile  
+    volumes:    
+      - ${GT_VOL_PATH}:/var/www/gt:ro
+      - ${SUBMITS_VOL_PATH}:/var/www/submits:ro
+      - ${SCRIPS_VOL_PATH}:/code/scripts:ro
+    ports:
+      - "9020:80"
+    restart: ${RESTART}
