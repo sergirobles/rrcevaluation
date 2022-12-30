@@ -72,12 +72,12 @@ You have to provide a configuration JSON file about the task and the metrics exp
 Example
     
 
-## Docker
+# Docker
 
 As working with docker, you can opt for your preferred programming language. The calculations but must be implemented on the same machine, you can’t call any external service for that purpose.
 
 
-# Python 3.9
+## Python 3.9
 If you work with Python, you can start with the sample Docker.
 ```
 docker-compose up -d
