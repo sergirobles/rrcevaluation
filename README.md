@@ -59,14 +59,9 @@ A JSON string with the following Dict:
 | samplesUrl | String * | URL to download the results ZIP file with samples information. *Required if you want to show samples information. |
 
 
-## Configuration
-This method has to return information about the task and the metrics expected for the evaluation.
+## Configuration file
+You have to provide a configuration JSON file about the task and the metrics expected for the evaluation.
 
-### Format
-[GET] /config
-
-OUTPUT:
-A JSON string with the following Dict:
 | Key | Type | Description |
 | --- | --- | --- |
 | title | String | The task title |
@@ -74,11 +69,25 @@ A JSON string with the following Dict:
 | method | dict | Results for the whole method. Metric and score. |
 | samplesUrl | String * | URL to download the results ZIP file with samples information. *Required if you want to show samples information. |
 
+Example
+    
 
+## Docker
 
 As working with docker, you can opt for your preferred programming language. The calculations but must be implemented on the same machine, you can’t call any external service for that purpose.
 
-If you work with Python, you can start with the sample Docker and you will only have to implement the calcuation script 'script.py' adding the dependencies on the requirements.txt file.
+
+# Python 3.9
+If you work with Python, you can start with the sample Docker.
+```
+docker-compose up -d
+```
+Docker for configuration and test
+http://localhost:9010
+
+Evaluation docker
+http://localhost:9020
+
 
 Metrics and results.
 You can include multiple metrics on the results file. On the competition results page you can show one or more of that metrics but only one will be the primary for the ranking.
