@@ -13,24 +13,24 @@ To hold a competition on the RRC site you have to:
 This method must validate the submition file/s and verify that all files have the correct format (all required fields are present and have to correct type) and the sample IDs matches the Ground Truth ones.
 
 ### Format
-    [POST] /validate
-    INPUTS:
+[POST] /validate
+INPUTS:
 
-    | Parameter | Type | Description |
-    | --- | --- | --- |
-    | gt | String/required | Internal path of the Ground Truth. If not specified the Ground Truth has to be inside the docker. (/var/www/gt/test.json in the example) |
-    | results | String | Internal path with the results file. (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder) |
-    | resultsFile | File | File with the results |
-    | methodParams | String/optional | Method params in JSON |
+| Parameter | Type | Description |
+| --- | --- | --- |
+| gt | String/required | Internal path of the Ground Truth. If not specified the Ground Truth has to be inside the docker. (/var/www/gt/test.json in the example) |
+| results | String | Internal path with the results file. (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder) |
+| resultsFile | File | File with the results |
+| methodParams | String/optional | Method params in JSON |
 
 
-    OUTPUT:
-    A JSON string with the following Dict:
+OUTPUT:
+A JSON string with the following Dict:
 
-    | Key | Type | Description |
-    | --- | --- | --- |
-    | result | Boolean | The results file is valid or not. |
-    | msg | String | If the results file is not valid, should return information here. |
+| Key | Type | Description |
+| --- | --- | --- |
+| result | Boolean | The results file is valid or not. |
+| msg | String | If the results file is not valid, should return information here. |
 
 
 
@@ -40,39 +40,39 @@ This method evaluates the submition and calculates the results. If you want to s
 
 
 ### Format
-    [POST] /evaluate
-    INPUTS:
-    | Parameter | Type | Description |
-    | --- | --- | --- |
-    | gt | String/required | Internal path of the Ground Truth. If not specified the Ground Truth has to be inside the docker. (/var/www/gt/test.json in the example) |
-    | results | String | Internal path with the results file. (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder) |
-    | resultsFile | File | File with the results |
-    | methodParams | String/optional | Method params in JSON |
+[POST] /evaluate
+INPUTS:
+| Parameter | Type | Description |
+| --- | --- | --- |
+| gt | String/required | Internal path of the Ground Truth. If not specified the Ground Truth has to be inside the docker. (/var/www/gt/test.json in the example) |
+| results | String | Internal path with the results file. (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder) |
+| resultsFile | File | File with the results |
+| methodParams | String/optional | Method params in JSON |
 
-    OUTPUT:
-    A JSON string with the following Dict:
-    | Key | Type | Description |
-    | --- | --- | --- |
-    | result | Boolean | The evaluation has been completed succesfully. |
-    | msg | String | Information about the error on the evaluation. |
-    | method | dict | Results for the whole method. Metric and score. |
-    | samplesUrl | String * | URL to download the results ZIP file with samples information. *Required if you want to show samples information. |
+OUTPUT:
+A JSON string with the following Dict:
+| Key | Type | Description |
+| --- | --- | --- |
+| result | Boolean | The evaluation has been completed succesfully. |
+| msg | String | Information about the error on the evaluation. |
+| method | dict | Results for the whole method. Metric and score. |
+| samplesUrl | String * | URL to download the results ZIP file with samples information. *Required if you want to show samples information. |
 
 
 ## Configuration
 This method has to return information about the task and the metrics expected for the evaluation.
 
 ### Format
-    [GET] /config
+[GET] /config
 
-    OUTPUT:
-    A JSON string with the following Dict:
-    | Key | Type | Description |
-    | --- | --- | --- |
-    | title | String | The task title |
-    | msg | String | Information about the error on the evaluation. |
-    | method | dict | Results for the whole method. Metric and score. |
-    | samplesUrl | String * | URL to download the results ZIP file with samples information. *Required if you want to show samples information. |
+OUTPUT:
+A JSON string with the following Dict:
+| Key | Type | Description |
+| --- | --- | --- |
+| title | String | The task title |
+| msg | String | Information about the error on the evaluation. |
+| method | dict | Results for the whole method. Metric and score. |
+| samplesUrl | String * | URL to download the results ZIP file with samples information. *Required if you want to show samples information. |
 
 
 
@@ -89,10 +89,9 @@ REST SERVICE
 
 <h3>Files: </h3>
 <ul>
-    <li><strong>/script/script.json</strong> Your validation & Evaluation script</li>
-    <li><strong>/requirements.txt</strong> Include your script dependencies</li>
-    <li><strong>/gt/config.json</strong> The file with the task configuration</li>
-    <li><strong>/gt/test.json</strong> Your ground Truth File</li>
-
-    <li><strong>/gt/samples.zip</strong> The ZIP file with all files required for the visualization of per sample</li>
+<li><strong>/script/script.json</strong> Your validation & Evaluation script</li>
+<li><strong>/requirements.txt</strong> Include your script dependencies</li>
+<li><strong>/gt/config.json</strong> The file with the task configuration</li>
+<li><strong>/gt/test.json</strong> Your ground Truth File</li>
+<li><strong>/gt/samples.zip</strong> The ZIP file with all files required for the visualization of per sample</li>
 </ul>
