@@ -81,9 +81,9 @@ Metric properties
 | type | String | The metric type (integer|double|string) |
 | order | String | This field is used to rank the methods in Ascending or Descending order (asc|desc). Only one metric for grafic is allowed. |
 | show | Integer |  Enter the method ranking grafic number showing this metric. There must be at least one metric with the value '1' (graphic 1).  |
-| format | String | (|perc) Normal / percentage. If set to percentage, the results will be showed in percent. (Result of that field should be float values from 0-1)  |
-| groupby | String | (method|property) Decides if the results graphic are grouped by methods or properties  |
-| separation | String | (|left|right) None / Left / Right. Shows a vertical separator on the results table  |
+| format | String | (values: ,perc) Normal / percentage. If set to percentage, the results will be showed in percent. (Result of that field should be float values from 0-1)  |
+| groupby | String | (values: method,property) Decides if the results graphic are grouped by methods or properties  |
+| separation | String | (vaues: left,right) None / Left / Right. Shows a vertical separator on the results table  |
 | table_group_name | String | Used to group similar properties (Repeat the same title on each property). If defined, it appears on a row over the property tile.  |
 | graphic_name | String | If defined, this title will be shown on the header of graphic |
 
