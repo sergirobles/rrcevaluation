@@ -190,6 +190,11 @@ function html_ranking(config){
 
                 const parameter_name = required_method_parameters[i];
 
+                if(methodResults.method== undefined ){
+                    $("#div_ranking").html("<div class='alert alert-danger'>The 'method' key is not found on the results (method.json)</div>");
+                    return;
+                }
+
                 if (methodResults.method[parameter_name]== null || methodResults.method[parameter_name]== undefined ) {
 
                     $("#div_ranking").html("<div class='alert alert-danger'>The Required metric <b>" + parameter_name + "</b> is not present on the results.  Make sure your evaluation script outputs all the required metrics</div>");

@@ -9,17 +9,29 @@ import uuid
 import shutil
 import urllib.request as urllib2
 import http.cookiejar as cookielib
+
 sys.path.append("/code/scripts/")
 
 from fastapi import FastAPI, File, UploadFile, Request, status, Form
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, Response
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 app1 = FastAPI()
 
+app1.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:9010"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 UPLOAD_FOLDER = '/var/tmp/'
+RESULTS_FOLDER = '/var/tmp/results/'
+DOCKER_DOMAIN = 'http://host.docker.internal:9020'
 
 @app1.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -30,7 +42,20 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app1.get('/', response_class=HTMLResponse)
 async def index():
-    return "<html><head><title>RRC Evaluation API</title></head><body><h1>RRC Evaluation API</h1><p>Methods</p><ul><li><a href='/validate'>/validate</a></li><li><a href='/evaluate'>/evaluate</a></li><li><a href='/config'>/config</a></li></ul></body></html>";
+    return """
+    <html>
+    <head>
+        <title>RRC Evaluation API</title>
+    </head>
+    <body>
+    <h1>RRC Evaluation API</h1>
+    <p>This docker version uses Python 3.9. If you have to change it, change the image in the Dockerfile.</p>
+    <p>Edit the requirements.txt file adding the dependencies you need</p>
+    <p>The docker will call the script.py file in the mounted volume 'scripts'. Implement the methods 'validate_data' and 'evaluate' on the script.</p>
+    <p>API Methods</p>
+    <ul><li><a href='/validate'>/validate</a></li><li><a href='/evaluate'>/evaluate</a></li><li><a href='/config'>/config</a></li></ul>
+    </body>
+    </html>""";
 
 
 @app1.get("/config")
@@ -89,8 +114,8 @@ def validate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
     
 
 @app1.post("/evaluate")
-def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] = None,  output:Optional[str]= Form(""), results:Optional[str]= Form("")):
-
+def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] = None,  results:Optional[str]= Form("")):
+    
     """
     This process validates a method, evaluates it and if it succed generates a ZIP file with a JSON entry for each sample.
     Params:
@@ -104,11 +129,6 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
     gt_path = gt
     if os.path.isfile(gt) == False:
         return {"result":False,"msg":"Ground Truth path not valid or not accesible (ground truth path must start with /var/www/gt)"}
-
-    if output != "":
-        if os.path.isdir(output) == False:
-            return {"result":False,"msg":"Output path not valid or not accesible (output path must start with /var/www/submits)"}
-
 
     if resultsFile == None :
         if results == "":
@@ -132,11 +152,8 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
         fd.write(contents)
         fd.close()
 
-    samples_file = "/var/www/submits/method.%s" % configDict['res_ext']
-    shutil.copyfile(results_path, samples_file)
 
-
-    resDict={'result':True,'msg':'','method':'{}','per_sample':'{}'}    
+    resDict={'result':True,'msg':'','method':{}}
 
     try:
         module = importlib.import_module("scripts.script")    
@@ -145,57 +162,46 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
         if resValidation['result'] == True:
 
             evalData = module.evaluate(gt_path, results_path)
-            resDict.update(evalData)
+            resDict['method'].update(evalData['method'])
+
+            #generate a new zip file with the method results
+            outputname = str(uuid.uuid4()) + ".zip"
+            resultsOutputname = UPLOAD_FOLDER + "/" + outputname
+            outZip = zipfile.ZipFile(resultsOutputname, mode='w', allowZip64=True)
+
+            #provide the URL to download the file
+            resDict['samplesUrl'] = DOCKER_DOMAIN + "/results/" + outputname
+
+            #Add samples results
+            outZip.writestr('method.json',json.dumps(resDict))            
+
+            if configDict['samples']==True:
+
+                #Add samples results
+                if 'per_sample' in evalData.keys():
+                    for k,v in evalData['per_sample'].items():
+                        outZip.writestr( k + '.json',json.dumps(v))                     
+
+                #Add other files
+                if 'output_items' in evalData.keys():
+                    for k, v in evalData['output_items'].items():
+                        outZip.writestr( k,v) 
+
+            outZip.close()
+
         else:
             resDict['msg'] = resValidation['msg']
             resDict['result'] = False
+            return
 
     except Exception as e:
         resDict['msg']= str(e)
         resDict['result']=False
 
-    if output != "":
-
-        resultsOutputname = output + '/results.zip'
-        outZip = zipfile.ZipFile(resultsOutputname, mode='w', allowZip64=True)
-
-        del resDict['per_sample']
-        if 'output_items' in resDict.keys():
-            del resDict['output_items']
-
-        outZip.writestr('method.json',json.dumps(resDict))
-        
-    if not resDict['result']:
-        if output != "":
-            outZip.close()
-        return resDict
-    
-    if output != "":
-        if 'per_sample' in evalData.keys():
-            for k,v in evalData['per_sample'].items():
-                outZip.writestr( k + '.json',json.dumps(v)) 
-
-        if 'output_items' in evalData.keys():
-            for k, v in evalData['output_items'].items():
-                outZip.writestr( k,v) 
-
-        outZip.close()
-    
     return resDict
 
 
-def file_get_contents(url):
-    url = str(url).replace(" ", "+") # just in case, no space in url
-    hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-           'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-           'Accept-Encoding': 'none',
-           'Accept-Language': 'en-US,en;q=0.8',
-           'Connection': 'keep-alive'}
-    req = urllib2.Request(url, headers=hdr)
-    try:
-        page = urllib2.urlopen(req)
-        return page.read()
-    except urllib2.HTTPError as e:
-        print(e.fp.read())
-    return ''
+@app1.get( "/results/{item_id}.zip" )
+async def read_sample(item_id: str):
+    results_file = "/var/tmp/%s.zip" % item_id
+    return FileResponse(results_file , media_type="application/zip") 

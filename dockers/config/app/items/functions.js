@@ -53,8 +53,10 @@ $(function() {
         const output = document.querySelector("#div_validate_response");
         const formElement = document.querySelector("#form_validate");
         const request = new XMLHttpRequest();
-        request.open("POST", "validate");
+        request.open("POST", "http://localhost:9020/validate");
         request.responseType = 'json';
+
+        output.innerHTML = `<div class='alert alert-info'>Please wait, validating results..</div>`   
 
         request.onload = (progress) => {
 
@@ -89,10 +91,13 @@ $(function() {
         const output = document.querySelector("#div_evaluate_response");
         const formElement = document.querySelector("#form_evaluate");
         const request = new XMLHttpRequest();
-        request.open("POST", "evaluate");
+        request.open("POST", "http://localhost:9020/evaluate");
         request.responseType = 'json';
 
-        output.innerHTML = `<div class='alert alert-info'>Please wait, calculating results..</div>`   
+        output.innerHTML = `<div class='alert alert-info'>
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>Please wait, calculating results..</div>`   
 
         request.onload = (progress) => {
 
@@ -101,7 +106,28 @@ $(function() {
                 var jsonResponse = request.response;
 
                 if (jsonResponse.result){
-                    output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated</div>`   
+
+                    //if (!configuration.samples){
+                    //    output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated.</div>`   
+                    //}else{
+                        
+
+                        if(jsonResponse.samplesUrl!=undefined){
+                            output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated. Downloading results..</div>`   
+                            $.post("/download_results",{"url":jsonResponse.samplesUrl},function(data){
+                                if(data.result){
+                                    output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated & Sample Results Downloaded</div>`   
+                                }else{
+                                    output.innerHTML = `<div class='alert alert-danger'>Error downloading the results file. <br><strong>${jsonResponse.msg}</strong></div>`   
+                                    $("#form_evaluate input[type='submit']").prop("disabled",false);
+                                }
+                            },"json");
+                        }else{
+                            output.innerHTML = `<div class='alert alert-danger'>Error. Parameter <strong>samplesUrl</strong> missing on the results</div>`   
+                            $("#form_evaluate input[type='submit']").prop("disabled",false);
+                        }
+                    //}
+
                 }else{
                     output.innerHTML = `<div class='alert alert-danger'>Error. The method is not valid.<br><strong>${jsonResponse.msg}</strong></div>`   
                     $("#form_evaluate input[type='submit']").prop("disabled",false);
@@ -112,8 +138,17 @@ $(function() {
                 output.innerHTML = `<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`   
             }
           };
+        request.onerror = () => {
+            output.innerHTML = `<div class='alert alert-danger'>Error ${request.status} occurred when evaluating your file</div>`   
+            $("#form_evaluate input[type='submit']").prop("disabled",false);
+        }
 
-        request.send(new FormData(formElement));
+        try{
+            request.send(new FormData(formElement));
+        }catch(err){
+            output.innerHTML = `<div class='alert alert-danger'>Error ${err} occurred when evaluating your file</div>`   
+            $("#form_evaluate input[type='submit']").prop("disabled",false);
+        }
 
     });    
 
