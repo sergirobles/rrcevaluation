@@ -10,6 +10,8 @@ services:
     ports:
       - "9010:80"
     restart: ${RESTART}
+    networks:
+      - rrc-net
 
   rrceval:
     build: ./dockers/python3.9/.
@@ -20,3 +22,10 @@ services:
     ports:
       - "9020:80"
     restart: ${RESTART}
+    networks:
+      - rrc-net    
+
+networks:
+  rrc-net:
+    name: rrcNet
+    driver: bridge
