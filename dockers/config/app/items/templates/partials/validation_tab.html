@@ -104,8 +104,13 @@
       <p class="card-text">
         The parameter <strong>gt</strong> is send with the value defined in the configuration. (/var/www/gt/{{ config.gt_path }})
       </p>
+      <p class="card-text">
+        The parameter <strong>methodParams</strong> is send with the value ({{ config.methodParameters }}).
+      </p>
 
       <input type="hidden" name="gt" class="gtField" value="">
+
+      <input type="hidden" name="methodParams" class="methodParams">
 
       <div class="mb-3">
         <label for="formFile" class="form-label">Select the results file</label>

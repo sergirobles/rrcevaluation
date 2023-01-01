@@ -103,7 +103,7 @@
     </div>      
     <div class="tab-pane fade" id="eval-outputszip-tab-pane" role="tabpanel" aria-labelledby="eval-outputszip-tab" tabindex="0">
 
-      <p>Your evaluation method must generate a ZIP file <b>results.zip</b> on the output folder. The contents of the ZIP file are:</p>
+      <p>Your evaluation method must generate a ZIP file with the results. The contents of the ZIP file are:</p>
     </table>
     <table class="table table-striped">
     <thead>
@@ -144,18 +144,19 @@
       The parameter <strong>gt</strong> is send with the value defined in the configuration. (/var/www/gt/{{ config.gt_path }})
     </p>
     <p class="card-text">
-      The parameter <strong>output</strong> is send with the value (/var/www/submits).
-    </p>        
+      The parameter <strong>methodParams</strong> is send with the value ({{ config.methodParameters }}).
+    </p>
 
     <input type="hidden" name="gt" class="gtField" value="">
+
+    <input type="hidden" name="methodParams" class="methodParams">
+
+
 
     <div class="mb-3">
       <label for="formFile" class="form-label">Select the results file</label>
       <input class="form-control" type="file" name="resultsFile" id="formFile">
-      <input type='hidden' name='methodParams' value='{}'>
     </div>
-
-    <input type='hidden' name='output' value='/var/www/submits'>
 
     <div class="alert alert-info">
       {{config.uploadInstructions}}

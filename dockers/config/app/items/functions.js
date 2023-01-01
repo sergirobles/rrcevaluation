@@ -20,10 +20,15 @@ $(function() {
     });
 
     $("#buttonMetrics,#buttonMetricsSample").click(function(){
-      edit_json_method_params(this);
+      edit_json_method_metrics(this);
 
     });
 
+    $("#buttonParameters").click(function(){
+        edit_json_method_params(this);
+  
+      });
+    
 
     $(document).on("click","div.card.sample",function(){
         let num = $(this).data("num");
@@ -163,6 +168,9 @@ $(function() {
                 data.sampleMetrics = {}
             }
 
+                
+                $("#inputTitle").val(data.title);
+
                 $("#inputGroundTruth").val(data.gt_path);
 
                 $("#sampleResults").prop("checked", data.samples);
@@ -187,7 +195,12 @@ $(function() {
                 $("#inputMethodMetricsVal").val(JSON.stringify(data.methodMetrics));
 
                 $("#inputMethodMetrics").val(Object.keys(data.methodMetrics).join(", "));
-                
+
+                $("#inputScript").val(data.script);
+
+                $("#inputMethodParametersVal").val(JSON.stringify(data.methodParameters));
+
+                $("#inputMethodParameters").val(data.methodParameters!= null ? Object.keys(data.methodParameters).join(", ") : "");
 
                 if (CKEDITOR.instances.inputUploadInstructions == undefined){
                     CKEDITOR.replace( 'inputUploadInstructions' );
@@ -217,6 +230,9 @@ function load_config(callback){
             $("input.gtField").val("/var/www/gt/" + configuration.gt_path);
             $("span.gtField").text("/var/www/gt/" + configuration.gt_path);
 
+            $("input.methodParams").val( JSON.stringify(configuration.methodParameters));
+            
+
             callback(data);
         });
     })
@@ -235,7 +251,7 @@ function save_config(){
 
         let field = fields[i];
         
-        if(field.name=="methodMetrics" || field.name=="sampleMetrics"){
+        if(field.name=="methodMetrics" || field.name=="sampleMetrics" || field.name=="methodParameters"){
             var value = {};
             try{
                 value = JSON.parse(field.value)
@@ -340,7 +356,108 @@ function mostrar_modal_html(title,html,html_footer,id,large,callback){
 
     return id;
 };
-    function edit_json_method_params(el){
+
+
+function edit_json_method_params (el){
+    var $input = $(el).closest("div").find("input");
+    var $textarea = $(el).closest("div").find("textarea");
+    mostrar_modal_html("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",true,function(){
+        var $dialog = $("#json_props");
+        var params = {};
+        if ($input.val().length>0){
+            params = JSON.parse($input.val());
+        }
+        for (var param in params) {
+            $dialog.find("#div_fields tbody").append(html_new_param(param));
+            $dialog.find("#div_fields tbody tr").last().find("input[name='value']").val(params[param]);
+            
+        }
+
+        $dialog.find("button.add").click(function(){
+            $dialog.find("#div_fields tbody").append(html_new_param(""));
+            $dialog.find("#div_fields tbody").sortable({
+                // items:'div.param.sort',
+                // handle: ".handle"
+             });
+        });
+
+
+
+
+        $dialog.on("click","button.treure",function(){
+            $(this).closest("tr.param").remove();
+        });
+
+        var $button = $("<button>Save</button>").addClass("btn btn-success").click(function(){
+
+            $("#json_props #div_alert_wrap").html("");
+            var result = {};
+            $dialog.find("tr.param").not(".header").each(function(){
+                if ($(this).find("input[name='name']").val()!=""){
+
+                    var value = $(this).find("input[name='value']").val();
+                    if (value == "true"){
+                        result[$(this).find("input[name='name']").val()] = true;
+                    }else if (value == "false"){
+                        result[$(this).find("input[name='name']").val()] = false;
+                    }else if ( $.isNumeric(value) ){
+                        if (parseFloat(value)!= NaN){
+                            result[$(this).find("input[name='name']").val()] = parseFloat(value);
+                        }else if (parseInt(value)!= NaN){
+                            result[$(this).find("input[name='name']").val()] = parseInt(value);
+                        }
+                    }else{
+                        result[$(this).find("input[name='name']").val()] = $(this).find("input[name='value']").val();    
+                    }
+                 }
+            });
+            $input.val(JSON.stringify(result));
+            $textarea.val(Object.keys(result).join(", "));
+
+            $dialog.modal("hide");
+
+        });
+        $dialog.find("div.modal-footer").append($button);    
+    });
+
+    function addColumn(title,width,info){
+        return "<th><span style='display:inline-block;width:" + width + "px;'>" + title + " <a href='#' data-toggle='tooltip' data-placement='bottom' title='" + info + "'><i class='bi bi-info-circle-fill'></i></a></span>";
+    }
+    function html_header(){
+        var html = "<tr class='param header'>";
+        html += "<th><span style='display:inline-block;width:30px;'></span>";
+        html += addColumn("Key",90,"Property reference as appears in the results of the evaluation");
+        html += addColumn("Value",100,"Property name");
+        html += "<th><span style='display:inline-block;width:30px;'></span>";
+
+        html += "</tr>";
+        return html;
+    }
+    function html_new_param(name){
+        var html = "<tr class='param form-inline input-group-sm sort'>";
+
+        html += "<td><span class='handle'><i class='bi bi-arrow-down-up'></i></span></td>";
+        
+        html += "<td><input class='form-control' type='text' class='form-control' name='name' value='" + name + "' maxlength='50' /></td>";
+        html += "<td><input class='form-control' type='text' class='form-control' name='value' maxlength='45' /></td>";
+
+        html += "<td><button class='btn btn-danger btn-xs treure'><i class='bi bi-trash'></i></button></td>";
+        html += "</tr>";
+        return html;
+    }
+
+    function show_error(error){
+
+        let html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">' +
+        '<strong>' + error + '</strong></div>';
+        setTimeout(function(){
+            $("#json_props #div_alert_wrap").html(html);
+        },100);
+        
+    }    
+    
+}
+    function edit_json_method_metrics(el){
         var $input = $(el).closest("div").find("input");
         var $textarea = $(el).closest("div").find("textarea");
 
