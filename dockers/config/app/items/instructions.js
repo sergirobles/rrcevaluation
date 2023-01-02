@@ -16,8 +16,14 @@ $(function() {
 
     $("#btnImport").click(function(){
 
+        if($("#selectExample").val()==""){
+            $("#div_msg_example").html("<div class='alert alert-danger'>Select the example</div>");
+        }
         $("#btnImport").prop("disabled",true);
-        $("#div_msg_example").html("<div class='alert alert-info'>Downloading example..</div>");
+        $("#div_msg_example").html(`<div class='alert alert-info'>
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>Please wait, downloading example..</div>`);
 
         $.post("./load_example", {"example":$("#selectExample").val()},function(data){
         
@@ -36,6 +42,59 @@ $(function() {
     
         },"json");
 
+    });
+
+
+    $('#formFile').on("change", function(){ 
+        var fileName = $(this).val();
+
+        if (fileName == ""){
+            return;
+        }
+
+        $("#btnImportFile").prop("disabled",true);
+        $("#div_msg_example").html(`<div class='alert alert-info'>
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>Please wait, downloading example..</div>`);
+
+        const request = new XMLHttpRequest();
+        request.open("POST", "http://localhost:9010/load_example");
+        request.responseType = 'json';
+
+        const formElement = document.querySelector("#form_example_local");        
+
+        request.onload = (progress) => {
+
+            if( request.status === 200 ){
+
+                $("#btnImportFile").prop("disabled",false);
+
+                var jsonResponse = request.response;
+                if (jsonResponse.result){
+                    $("#div_msg_example").html("<div class='alert alert-success'>Example loaded</div>");
+                }else{
+                    $("#div_msg_example").html("<div class='alert alert-danger'>" + jsonResponse.msg + "</div>");                    
+                    
+                }
+
+            }else{
+                $("#btnImportFile").prop("disabled",false);
+                $("#div_msg_example").html(`<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`);   
+            }
+          };
+        request.onerror = () => {
+            $("#div_msg_example").html(`<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`);   
+            $("#btnImportFile").prop("disabled",false);
+        }
+
+        try{
+            request.send(new FormData(formElement));
+        }catch(err){
+            $("#div_msg_example").html(`<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`);   
+            $("#btnImportFile").prop("disabled",false);
+        }
+    
     });
 
 })

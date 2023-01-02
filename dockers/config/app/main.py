@@ -321,79 +321,144 @@ def validate_method_metric_params(params):
 
    
 @app1.post("/load_example")
-def load_example( example:Optional[str] = Form("") ):
+def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFile, None] = None ):
 
-    example_path = UPLOAD_FOLDER + "/" + str(uuid.uuid4())
+    example_path = UPLOAD_FOLDER + str(uuid.uuid4())
     os.mkdir(example_path)
 
     zip_path = example_path + "/" + str(uuid.uuid4()) + ".zip"
 
-    with urllib2.urlopen(example) as response, open(zip_path, 'wb') as out_file:
-        shutil.copyfileobj(response, out_file)
+    if exampleFile != None :
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+        zip_path = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4())) 
+        contents = exampleFile.file.read()
 
-        #shutil.unpack_archive(zip_path, example_path)
+        fd = open(zip_path, "wb")
+        fd.write(contents)
+        fd.close()
 
-        with zipfile.ZipFile(zip_path) as zf:
+    else:
+        with urllib2.urlopen(example) as response, open(zip_path, 'wb') as out_file:
+            shutil.copyfileobj(response, out_file)
 
-            zf.extractall(example_path)
+    with zipfile.ZipFile(zip_path) as zf:
 
-            
-            zf.close()
+        zf.extractall(example_path)
 
-            #if os.path.exists(example_path) == False or os.path.isdir(example_path) == False :
-            #    return {"result":False,"msg":"Example folder not found"}
+        zf.close()
 
-            config_path = example_path + '/config.json'
-            if os.path.exists(config_path) == False or os.path.isfile(config_path) == False :
-                return {"result":False,"msg":"Config file folder not found %s" % config_path}
+        config_path = example_path + '/config.json'
+        if os.path.exists(config_path) == False or os.path.isfile(config_path) == False :
+            return {"result":False,"msg":"Config file folder not found %s" % config_path}
 
-            shutil.copyfile(config_path, '/var/www/gt/config.json')
+        
+        for file_name in os.listdir('/code/scripts'):
+            # construct full file path
+            file = '/code/scripts/' + file_name
+            if os.path.isfile(file):
+                print('Deleting file:', file)
+                os.remove(file)
+            elif os.path.isdir(file):
+                shutil.rmtree('/code/scripts/%s' % file_name)
 
-            configDict = config()
+        for file_name in os.listdir('/var/www/submits/'):
+            # construct full file path
+            file = '/var/www/submits/' + file_name
+            if os.path.isfile(file):
+                print('Deleting file:', file)
+                os.remove(file)            
 
-            for file_name in os.listdir('/code/scripts'):
-                # construct full file path
-                file = '/code/scripts/' + file_name
-                if os.path.isfile(file):
-                    print('Deleting file:', file)
-                    os.remove(file)
+        for file_name in os.listdir('/var/www/gt/'):
+            # construct full file path
+            file = '/var/www/gt/' + file_name
+            if os.path.isfile(file):
+                print('Deleting file:', file)
+                os.remove(file)                                 
 
-            for file_name in os.listdir(example_path + '/scripts'):
-                src = example_path + '/scripts/' + file_name
-                dest = '/code/scripts/' + file_name
-                if os.path.isfile(src):
-                    shutil.copyfile(src, dest)
+        shutil.copyfile(config_path, '/var/www/gt/config.json')
 
-            results_path = '/var/www/submits/results.zip'
-            example_results_path = example_path + '/results.zip'
-            if os.path.exists(example_results_path) == False or os.path.isfile(example_results_path) == False :
-                if os.path.exists(results_path):
-                    os.remove(results_path)
-            else:
-                shutil.copyfile(example_results_path, results_path)
+        configDict = config()
 
-            method_path = '/var/www/submits/method.%s' % configDict["res_ext"]
-            example_method_path = example_path + '/method.%s' % configDict["res_ext"]
-            if os.path.exists(example_method_path) == False or os.path.isfile(example_method_path) == False :
-                if os.path.exists(method_path):
-                    os.remove(method_path)
-            else:
-                shutil.copyfile(example_method_path, method_path)     
+        for file_name in os.listdir(example_path + '/scripts'):
+            src = example_path + '/scripts/' + file_name
+            dest = '/code/scripts/' + file_name
+            if os.path.isfile(src):
+                shutil.copyfile(src, dest)
 
-            samples_path = '/var/www/gt/%s' % configDict["samples_path"]
-            example_samples_path = example_path + '/' + configDict["samples_path"]
-            if os.path.exists(samples_path):
-                os.remove(samples_path)
+        results_path = '/var/www/submits/results.zip'
+        example_results_path = example_path + '/submits/results.zip'
+        if os.path.exists(example_results_path) == True and os.path.isfile(example_results_path) == True :
+            shutil.copyfile(example_results_path, results_path)
+
+        method_path = '/var/www/submits/method.%s' % configDict["res_ext"]
+        example_method_path = example_path + '/submits/method.%s' % configDict["res_ext"]
+        if os.path.exists(example_method_path) == True and os.path.isfile(example_method_path) == True :
+            shutil.copyfile(example_method_path, method_path)     
+
+        samples_path = '/var/www/gt/%s' % configDict["samples_path"]
+        example_samples_path = example_path + '/gt/' + configDict["samples_path"]
+        if os.path.exists(example_samples_path) == True and os.path.isfile(example_samples_path) == True :
             shutil.copyfile(example_samples_path, samples_path)
 
+        gt_path = '/var/www/gt/%s' % configDict["gt_path"]
+        example_gt_path = example_path + '/gt/' + configDict["gt_path"]
+        shutil.copyfile(example_gt_path, gt_path)        
+
+        return {"result":True}
+
+
+@app1.get("/export")
+def export():
+
+    #try :
+
+        configDict = config()
+
+        example_path = UPLOAD_FOLDER + str(uuid.uuid4())
+        os.mkdir(example_path)
+
+        zip_path = example_path + "/" + str(uuid.uuid4()) + ".zip"
+
+        with zipfile.ZipFile(zip_path,'w') as zf:
+
+            #add config file
+
+            zf.write('/var/www/gt/config.json','config.json');
+
             gt_path = '/var/www/gt/%s' % configDict["gt_path"]
-            example_gt_path = example_path + '/' + configDict["gt_path"]
-            if os.path.exists(gt_path):
-                os.remove(gt_path)
-            shutil.copyfile(example_gt_path, gt_path)        
+            zf.write(gt_path,'/gt/%s' % configDict["gt_path"]);
 
-            return {"result":True}
+            if configDict["samples"] == True:
+                samples_path = '/var/www/gt/%s' % configDict["samples_path"]
+                zf.write(samples_path,'/gt/%s' % configDict["samples_path"])
 
+            for file_name in os.listdir('/code/scripts'):
+                if file_name != '__pycache__':
+                    if os.path.isfile('/code/scripts/%s' % file_name) == True:
+                        zf.write('/code/scripts/%s' % file_name,'/scripts/%s' % file_name)
+                    elif os.path.isdir('/code/scripts/%s' % file_name) == True:
+                        folder = file_name
+                        for file_name in os.listdir('/code/scripts/%s' % folder):
+                            if file_name != '__pycache__' and os.path.isfile('/code/scripts/%s/%s' % (folder,file_name)) == True:
+                                zf.write('/code/scripts/%s/%s' % (folder,file_name),'/scripts/%s/%s' % (folder,file_name) )
+
+
+            results_path = '/var/www/submits/results.zip'
+            if os.path.exists(results_path) == True and os.path.isfile(results_path) == True :
+                zf.write(results_path,'/submits/results.zip' )
+
+            method_path = '/var/www/submits/method.%s' % configDict["res_ext"]
+            if os.path.exists(method_path) == True and os.path.isfile(method_path) == True :
+                zf.write(method_path,'/submits/method.%s' % configDict["res_ext"] )
+
+            zf.close()
+
+            return FileResponse(zip_path , media_type="application/zip") 
+
+    #except Exception as e:    
+
+    #    return {"result":False,"msg":e}     
 
 def file_get_contents(url):
     url = str(url).replace(" ", "+") # just in case, no space in url

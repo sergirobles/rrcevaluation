@@ -52,7 +52,7 @@
               <p class="card-text">You can load an existing example: script, ground truth, samples info and configuration.</p>
 
               <div class="alert alert-warning mt-3">
-                Note that if you import an example, your current configuration and scripts will be lost.
+                Note that if you import an example, all the files on the mounted volumes (gt, submits, scripts) will be cleared.
               </div>
 
               <div class="form-floating mb-4">
@@ -60,12 +60,29 @@
                 <select class="form-select" name="res_ext" aria-label="Results extension" id="selectExample" placeholder="Results extension" data-bs-toggle="tooltip" data-bs-title="Select the example to load.">
                     <option selected></option>
                     </select>
-                    <label for="selectExample">Load example</label>
+                    <label for="selectExample">Load example from RRC</label>
               </div>
 
               <div id="div_msg_example"></div>
-              <button type="button" class="card-link btn btn-warning" id="btnImport">Load</button>
-            </div>
+
+              <div class="row">
+
+                <div class="col">
+                  <button type="button" class="card-link btn btn-warning" id="btnImport">Load example from RRC</button>
+                </div>
+                <div class="col">
+                  <form id="form_example_local">
+                  <label for="formFile" class="card-link btn btn-warning" id="btnImportFile">Load from local file</label>
+                  <input class="form-control" type="file" name="exampleFile" accept=".zip" id="formFile" style="display:none;">
+                 </form>
+                </div>
+
+              </div>
+
+
+              </div>
+
+
           </div>
 
         </div>
@@ -78,15 +95,16 @@
 
               <ul>
                 <li>Ground truth</li>
-                <li>Python script (v.3.9)</li>
-                <li>Samples</li>
+                <li>Python scripts (v.3.9) or your custom docker</li>
+                <li>Samples (optional)</li>
                 <li>Configuration file</li>
                 <li>Requirements file</li>
                 <li>Submition sample</li>
               </ul>
 
               <div id="div_msg_export"></div>
-              <button type="button" class="card-link btn btn-success" id="btnExport">Export zip</button>
+              <a href='/export' class="card-link btn btn-success" id="btnExport">Export zip</a>
+              <p class="mt-3">If you have customized the evaluation docker, you will have to manually export it.</p>
             </div>
           </div>    
         </div>      

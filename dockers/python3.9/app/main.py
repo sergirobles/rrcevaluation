@@ -27,6 +27,7 @@ DOCKER_DOMAIN = 'http://host.docker.internal:9020'
 
 app1 = FastAPI()
 
+#Enable CORS allowing configuration docker make API calls
 app1.add_middleware(
     CORSMiddleware,
     allow_origins=[DOCKER_CONFIG_DOMAIN],
@@ -53,7 +54,7 @@ async def index():
     <h1>RRC Evaluation API</h1>
     <p>This docker version uses Python 3.9. If you have to change it, change the image in the Dockerfile.</p>
     <p>Edit the requirements.txt file adding the dependencies you need</p>
-    <p>The docker will call the script.py file in the mounted volume 'scripts'. Implement the methods 'validate_data' and 'evaluate' on the script.</p>
+    <p>The docker will call a script (script.py by default) in the mounted volume 'scripts'. Implement the methods 'validate_data' and 'evaluate_method' on that script.</p>
     <p>API Methods</p>
     <ul><li><a href='/validate'>/validate</a></li><li><a href='/evaluate'>/evaluate</a></li><li><a href='/config'>/config</a></li></ul>
     </body>
@@ -100,17 +101,9 @@ def validate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
 @app1.post("/evaluate")
 def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] = None,  results:Optional[str]= Form(""), methodParams: Optional[str] = Form("")):
     
-    """
-    This process validates a method, evaluates it and if it succed generates a ZIP file with a JSON entry for each sample.
-    Params:
-    p: Dictionary of parmeters with the GT/submission locations. If None is passed, the parameters send by the system are used.
-    default_evaluation_params_fn: points to a function that returns a dictionary with the default parameters used for the evaluation
-    validate_data_fn: points to a method that validates the correct format of the submission
-    evaluate_method_fn: points to a function that evaluated the submission and return a Dictionary with the results
-    """
-    configDict = config()
-
     try:
+
+        configDict = config()
 
         gt_path = gt
         if os.path.isfile(gt) == False:
@@ -149,6 +142,9 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
         if 'Message' in evalData:
             evalData['msg'] = evalData['Message']
             del evalData['Message']
+
+        if evalData['result'] == False:
+            return {"result":False,"msg":evalData['msg']}
 
         resDict['method'].update(evalData['method'])
 
