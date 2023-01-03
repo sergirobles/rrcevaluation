@@ -6,19 +6,19 @@ ClassVisualization.prototype.load_visualization = function(){
     
     var sampleData = this.sampleData;
 
-    var urlImg = "/samples/img_" + samples.currentSample + ".jpg";
+    var urlImg = this.getSamplesFile("img_" + samples.currentSample + ".jpg");
 
-    var urlGtColor = "/gtFile/gt_color_" + samples.currentSample + ".png";
-    var urlGtBW = "/gtFile/gt_bw_" + samples.currentSample + ".png";
+    var urlGtColor = this.getGTFile("gt_color_" + samples.currentSample + ".png");
+    var urlGtBW = this.getGTFile("gt_bw_" + samples.currentSample + ".png");
     
     
-    var urlDetImg = "/methodFile/res_img_" + samples.currentSample + ".png";
+    var urlDetImg = this.getMethodFile("res_img_" + samples.currentSample + ".png");
      
-    var urlDetImgPx = "/methodResults/px_img" + samples.currentSample + ".png";
+    var urlDetImgPx = this.getMethodResultsFile("px_img" + samples.currentSample + ".png");
      
-    var urlDetImgAt = "/methodResults/res_atoms_det_" + samples.currentSample + ".png";
+    var urlDetImgAt = this.getMethodResultsFile("res_atoms_det_" + samples.currentSample + ".png");
      
-    var urlGtImgAt = "/methodResults/res_atoms_gt_" + samples.currentSample + ".png";
+    var urlGtImgAt = this.getMethodResultsFile("res_atoms_gt_" + samples.currentSample + ".png");
      
      
 

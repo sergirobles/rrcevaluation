@@ -16,6 +16,7 @@ $(function() {
             examples = {
                 "https://www.hipicgest.com/med/rrc/IST.zip":"RRC Incidental Scene Text 2015",
                 "https://www.hipicgest.com/med/rrc/FST.zip":"RRC Focused Scene Text (Segmentation task)",
+                "https://www.hipicgest.com/med/rrc/Text_in_Videos_E2E.zip":"RRC Text in Videos E2E Task",
                 "https://www.hipicgest.com/med/rrc/SimpleExample.zip":"Simple Example"
             }
         
@@ -79,7 +80,7 @@ $(function() {
         $("#div_msg_example").html(`<div class='alert alert-info'>
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
-        </div>Please wait, downloading example..</div>`);
+        </div>Please wait, loading example..</div>`);
 
         const request = new XMLHttpRequest();
         request.open("POST", "http://localhost:9010/load_example");

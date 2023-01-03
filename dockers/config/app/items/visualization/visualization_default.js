@@ -50,7 +50,7 @@ var ClassVisualization = function(){
     
     this.load_sample_info = function(data,num,id){
         visualization.sampleNum = num;
-        visualization.sampleId = id;
+        visualization.sampleId = "" + id;
         visualization.sampleData = data;
         visualization.load_visualization();
     };
@@ -331,6 +331,19 @@ var ClassVisualization = function(){
         ctx.fillText(text,this.original_to_zoom_val(parseInt(BL.x)) + 3 , this.original_to_zoom_val_y(parseInt(BL.y)) + fontSize);
   
     };
+
+    this.getGTFile = function(file){
+        return "/gtFile/" + file;
+    }
+    this.getMethodFile = function(file){
+        return "/methodFile/" + file;
+    }
+    this.getMethodResultsFile = function(file){
+        return "/methodResults/" + file;
+    }    
+    this.getSamplesFile = function(file){
+        return "/samples/" + file;
+    }    
     
 };
 

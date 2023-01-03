@@ -53,6 +53,8 @@ async def read_sample(item_id: str):
         media_type = "video/mp4"        
     elif extension == 'json':
         media_type = "application/json"
+    elif extension == 'xml':
+        media_type = "application/xml"        
 
     return Response(content=data, media_type=media_type)   
 
@@ -73,6 +75,8 @@ async def read_sample(item_id: str):
         media_type = "video/mp4"        
     elif extension == 'json':
         media_type = "application/json"
+    elif extension == 'xml':
+        media_type = "application/xml"             
 
     return Response(content=data, media_type=media_type)       
 
@@ -93,6 +97,8 @@ async def read_sample(item_id: str):
         media_type = "video/mp4"        
     elif extension == 'json':
         media_type = "application/json"
+    elif extension == 'xml':
+        media_type = "application/xml"             
 
     return Response(content=data, media_type=media_type)    
 
