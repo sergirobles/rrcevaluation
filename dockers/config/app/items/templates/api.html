@@ -10,8 +10,8 @@
       <div class="col-4">
         
         <ul class="list-group">
-          <li class="list-group-item active" data-bs-toggle="tab" data-bs-target="#configuration-tab-pane">Configuration</li>              
-          <li class="list-group-item" aria-current="true" data-bs-toggle="tab" data-bs-target="#validation-tab-pane">Results Validation</li>
+ 
+          <li class="list-group-item active" aria-current="true" data-bs-toggle="tab" data-bs-target="#validation-tab-pane">Results Validation</li>
           <li class="list-group-item" data-bs-toggle="tab" data-bs-target="#evaluation-tab-pane">Results Evaluation</li>
 
         </ul>
@@ -19,7 +19,7 @@
 
       <div class="col-8 tab-content">
 
-        <div class="tab-pane fade" id="validation-tab-pane" role="tabpanel" tabindex="0">
+        <div class="tab-pane fade show active" id="validation-tab-pane" role="tabpanel" tabindex="0">
             {% include "partials/validation_tab.html" %}
         </div>
 
@@ -27,9 +27,6 @@
             {% include "partials/evaluation_tab.html" %}
         </div>
 
-        <div class="tab-pane fade show active" id="configuration-tab-pane" role="tabpanel" tabindex="0">
-            {% include "partials/configuration_tab.html" %}
-        </div>
 
       </div>
 
@@ -40,7 +37,3 @@
 
 
 
-{% block head %}
-<script src="//cdn.ckeditor.com/4.20.1/basic/ckeditor.js"></script>
-
-{% endblock %}   

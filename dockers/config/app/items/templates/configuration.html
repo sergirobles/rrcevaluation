@@ -1,0 +1,188 @@
+{% extends "page.html" %}
+
+{% block content %}
+
+<div class="tab-pane fade  show active" id="functions-tab-pane" role="tabpanel" aria-labelledby="functions-tab" tabindex="0">
+
+    <div class="card" id="div_task">
+
+        <div class="card-body">
+        
+            <h3 class="card-title mb-3">Task configuration</h3>
+            <form>
+        
+            <div class="row">
+        
+                <div class="col-md-6">
+                    
+                <div class="form-floating mb-4">
+                    <input type="text" name="title" class="form-control" id="inputTitle" maxlength="100" placeholder="Task Title" data-bs-toggle="tooltip" data-bs-title="Title of the Task">
+                    <label for="inputTitle">Task Title</label>
+                </div>
+        
+                <div class="row">
+                    <div class="col-xl-6">
+                    <div class="form-floating mb-4">
+                        <input type="text" name="gt_path" class="form-control" id="inputGroundTruth" maxlength="100" placeholder="Ground Truth Path" data-bs-toggle="tooltip" data-bs-title="Physical location of the GT file relative on the docker mapped folder.">
+                        <label for="inputGroundTruth">Ground Truth Path</label>
+                    </div>
+                    </div>
+                    <div class="col-xl-6">
+                    <div class="form-floating mb-4">
+                        <select class="form-select" name="res_ext" aria-label="Results extension" id="selectResultsExt" placeholder="Results extension" data-bs-toggle="tooltip" data-bs-title="The required extension for the method results.">
+                            <option selected></option>
+                            <option value="json">JSON</option>
+                            <option value="jsonl">JSONL</option>
+                            <option value="zip">ZIP</option>
+                            <option value="txt">TXT</option>
+                        </select>
+                        <label for="selectResultsExt">Results extension</label>
+                    </div>
+                    </div>
+                </div>
+        
+                <div class="form-floating mb-4">
+                    <div class="form-control" style="height:280px;" data-bs-toggle="tooltip" data-bs-title="Define the format of the whole results file.">
+                    <textarea class="form-control" id="inputUploadInstructions"></textarea>
+                    </div>
+                    <label for="buttonMetrics">Upload instructions</label>
+                    <input type="hidden" name="uploadInstructions" id="inputUploadInstructions">
+                </div>
+        
+                <div class="form-floating mb-4">
+                    <input type="text" name="script" class="form-control" id="inputScript" maxlength="60" placeholder="Python Script Name" data-bs-toggle="tooltip" data-bs-title="Python Script Name (located in the scripts folder, without extension. 'script' by default)">
+                    <label for="inputScript">Script Name (if using the Python docker example)</label>
+                </div>
+        
+        
+                <div class="input-group mb-4">
+                    <div class="form-floating">
+                    <textarea class="form-control" readonly id="inputScriptRequirements" style="height: 60px" data-bs-toggle="tooltip" data-bs-title="Required parameters the user must fill when uploading the results."></textarea>
+                    <label for="buttonScriptRequirements">Python Script requirements (if using the Python docker example)</label>
+                    <input type="hidden" name="scriptRequirements" id="inputScriptRequirementsVal">
+                    </div>
+                    <span class="input-group-text"><button class="btn btn-secondary" type="button" id="buttonScriptRequirements">..</button></span>
+                </div>
+                        
+        
+                <div class="input-group mb-4">
+                    <div class="form-floating">
+                        <textarea class="form-control" readonly id="inputUserParameters" data-bs-toggle="tooltip" data-bs-title="Required parameters the user must fill when uploading the results."></textarea>
+                        <label for="buttonUserParameters">User parameters</label>
+                        <input type="hidden" name="userParameters" id="inputUserParametersVal">
+                    </div>
+                        <span class="input-group-text"><button class="btn btn-secondary" type="button" id="buttonUserParameters">..</button></span>
+                </div>
+        
+                </div>
+                <div class="col-md-6">
+        
+                <div class="input-group mb-4">
+                    <div class="form-floating">
+                        <textarea class="form-control" readonly id="inputMethodParameters" style="height: 100px" data-bs-toggle="tooltip" data-bs-title="Parameters to pass to the evaluation script."></textarea>
+                        <label for="buttonParameters">Method evaluation parameters</label>
+                        <input type="hidden" name="methodParameters" id="inputMethodParametersVal">
+                    </div>
+                        <span class="input-group-text"><button class="btn btn-secondary" type="button" id="buttonParameters">..</button></span>
+                </div>
+        
+                <div class="input-group mb-4">
+                    <div class="form-floating">
+                    <textarea class="form-control" readonly id="inputMethodMetrics" data-bs-toggle="tooltip" data-bs-title="Configure the method metrics to show on the method results table. All this metrics must be present on the results generated by the evaluation scripts."></textarea>
+                    <label for="buttonMetrics">Method metrics</label>
+                    <input type="hidden" name="methodMetrics" id="inputMethodMetricsVal">
+                    </div>
+                    <span class="input-group-text"><button class="btn btn-secondary" type="button" id="buttonMetrics">..</button></span>
+                </div>
+        
+        
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" name="samples" role="switch" id="sampleResults">
+                    <label class="form-check-label" for="sampleResults">Show per sample results</label>
+                </div>
+        
+                <div id="div_config_samples" class="d-none">
+        
+                    <div class="form-floating mb-3">
+                        <input type="text" name="samples_path" class="form-control" id="inputSamples" maxlength="100" placeholder="Samples Path">
+                        <label for="inputSamples">Samples Path</label>
+                    </div>
+                
+        
+                    <div class="form-floating mb-4">
+                    <select class="form-select" name="samplesListType" aria-label="Samples list" id="selectSamplesListType">
+                        <option value="regexp" selected>Zip items matching a regular expresion</option>
+                        <option value="samples">The samples are defined in the 'samples.json' item</option>
+                        </select>
+                        <label for="selectSamplesListType">Samples list</label>
+                    </div>   
+        
+                    <div class="form-floating mb-4" id="divSamplesRegexp">
+                    <input type="text" name="samplesRegExp" class="form-control" id="inputSamplesRegExp" maxlength="100" placeholder="Regular expression" data-bs-toggle="tooltip" data-bs-title="Regular expression that will be used to filter files in the samples ZIP and also get the Identificator of each sample. The Identificator will be the first capturing group of the regular expression.">
+                    <label for="inputSamplesRegExp">Regular expresion for samples ID</label>
+                    </div>
+            
+        
+                    <div class="input-group mb-4">
+                    <div class="form-floating">
+                        <textarea class="form-control" readonly id="inputSampleMetrics" data-bs-toggle="tooltip" data-bs-title="Configure the method metrics to show on the method results table. All this metrics must be present on the results generated by the evaluation scripts."></textarea>
+                        <label for="buttonMetricsSample">Samples metrics</label>
+                        <input type="hidden" name="sampleMetrics" id="inputSampleMetricsVal">
+                    </div>
+                        <span class="input-group-text"><button class="btn btn-secondary" type="button" id="buttonMetricsSample">..</button></span>
+                    </div>
+        
+                    <div class="form-floating mb-4">
+                        
+                    <select class="form-select" name="visualization" aria-label="Visualization" id="selectVisualization">
+                        <option value="" selected>Default visualization</option>
+                        <option value="TL_iou">TL Intersection Over Union</option>
+                        <option value="Segm">Segmentation</option>
+                        <option value="E2E">End to End</option>
+                        <option value="E2E_video">End to End video</option>
+                        </select>
+                        <label for="selectVisualization">Visualization</label>
+                    </div>                
+                </div>
+        
+                </div>
+            </div>
+            </form>
+        
+            
+            
+        </div> 
+        <div class="card-footer">
+        
+            <div class="row">
+        
+            <div class="col">
+                <button type="button" class="btn btn-primary" id="btnSaveTask">Save</button>
+        
+                <div id="div_msg" class="d-inline-block"></div>
+            </div>
+        
+            <div class="col">
+                <button type="button" class="card-link btn btn-warning" id="btnValidate">Validate</button>        
+            
+                <div id="div_validation"  class="d-inline-block"></div>    
+            </div>
+            </div>
+        
+        
+        
+        
+        
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+
+{% block head %}
+<script src="items/configuration.js"></script>
+<script src="//cdn.ckeditor.com/4.20.1/basic/ckeditor.js"></script>
+
+{% endblock %}   

@@ -1,9 +1,21 @@
 var configuration;
 
+function updateMethodParameters($form){
+    values = configuration.methodParameters;
+
+    $form.find("select.userParameter").each(function(){
+        values[$(this).prop("name")] = $(this).val();
+    });
+
+    $form.find("span.methodParameters").html(JSON.stringify(values));
+}
+
 $(function() {
 
     load_config(function(){
-
+        $("#form_evaluate,#form_validate").each(function(){
+            updateMethodParameters($(this));
+        })
 
     });
 
@@ -19,16 +31,20 @@ $(function() {
         }
     });
 
-    $("#buttonMetrics,#buttonMetricsSample").click(function(){
-      edit_json_method_metrics(this);
 
-    });
-
-    $("#buttonParameters").click(function(){
-        edit_json_method_params(this);
-  
-      });
     
+
+      $(document).on("change","select.userParameter",function(){
+        
+            let $form = $(this).closest("form");
+            updateMethodParameters($form);
+
+      });
+
+
+    
+
+
 
     $(document).on("click","div.card.sample",function(){
         let num = $(this).data("num");
@@ -38,16 +54,7 @@ $(function() {
     });    
     
 
-    let modalTask = document.getElementById("modalTask");
-
-    $("#btnSaveTask").click(function(){
-        save_config();
-  
-      });
-      $("#btnValidate").click(function(){
-        validate_config();
-  
-      });      
+   
       
       
 
@@ -157,69 +164,6 @@ $(function() {
 
     });    
 
-    modalTask.addEventListener('shown.bs.modal', () => {
-        load_config(function(data){
-
-            if (data.methodMetrics == undefined) {
-                data.methodMetrics = {}
-            }
-
-            if (data.sampleMetrics == undefined) {
-                data.sampleMetrics = {}
-            }
-
-                
-                $("#inputTitle").val(data.title);
-
-                $("#inputGroundTruth").val(data.gt_path);
-
-                $("#sampleResults").prop("checked", data.samples);
-
-                if($("#sampleResults").prop("checked")){
-                    $("#div_config_samples").removeClass("d-none");
-                  }else{
-                    $("#div_config_samples").addClass("d-none");
-                  }                
-
-                if(data.samples){
-                  $("#div_samples").removeClass("d-none");
-                }else{
-                  $("#div_samples").addClass("d-none");
-                }
-
-                $("#selectResultsExt").val(data.res_ext);
-
-                $("#selectVisualization").val(data.visualization);
-
-
-                $("#inputMethodMetricsVal").val(JSON.stringify(data.methodMetrics));
-
-                $("#inputMethodMetrics").val(Object.keys(data.methodMetrics).join(", "));
-
-                $("#inputScript").val(data.script);
-
-                $("#inputMethodParametersVal").val(JSON.stringify(data.methodParameters));
-
-                $("#inputMethodParameters").val(data.methodParameters!= null ? Object.keys(data.methodParameters).join(", ") : "");
-
-                if (CKEDITOR.instances.inputUploadInstructions == undefined){
-                    CKEDITOR.replace( 'inputUploadInstructions' );
-                }
-                
-                CKEDITOR.instances.inputUploadInstructions.setData(data.uploadInstructions);
-
-                if(Object.keys(data.sampleMetrics).length>0){
-                    $("#inputSampleMetricsVal").val(JSON.stringify(data.sampleMetrics));
-                    $("#inputSampleMetrics").val(Object.keys(data.sampleMetrics).join(", "));
-                }else{
-                    $("#inputSampleMetricsVal").val("{}");
-                    $("#inputSampleMetrics").val("");
-                }
-
-                $("#inputSamples").val(data.samples_path);
-                
-            });
-        });
 });
 
 function load_config(callback){
@@ -242,57 +186,8 @@ function load_config(callback){
 }
 
 
-function save_config(){
 
-    let fields = $("#modalTask form").serializeArray();
-    let out = {};
 
-    for(var i=0;i<fields.length;i++){
-
-        let field = fields[i];
-        
-        if(field.name=="methodMetrics" || field.name=="sampleMetrics" || field.name=="methodParameters"){
-            var value = {};
-            try{
-                value = JSON.parse(field.value)
-            }catch{
-                value = {};
-            }
-            out[field.name] = value
-        }else if (field.name=="uploadInstructions") {
-            out[field.name] = CKEDITOR.instances.inputUploadInstructions.getData();
-        }else{
-            out[field.name] = field.value;    
-        }
-    }
-    //changing to boolean
-    out["samples"] = out["samples"]=="on";
-
-    $("#modalTask #div_msg").html("");
-    $.post("./save_config", {"config":JSON.stringify(out)},function(data){
-        
-        
-        if(data.result){
-            configuration = out;
-            $("#modalTask").modal('hide');
-        }else{
-            $("#modalTask #div_msg").html(data.msg);
-        }
-
-    },"json");
-}
-
-function validate_config(){
-    $.get("./validate_config",function(data){
-        if(data.result){
-            html = '<div class="alert alert-success">Configuration is correct</div>';
-        }else{
-            html = '<div class="alert alert-warning">Error: ' + data.msg + '</div>';
-        }
-        $("#div_validation").html(html);
-
-    },"json");
-}
 
 function escapeQuotes (string) {
     return string.replace(/'/g, "&#39;");
@@ -356,289 +251,6 @@ function mostrar_modal_html(title,html,html_footer,id,large,callback){
 
     return id;
 };
-
-
-function edit_json_method_params (el){
-    var $input = $(el).closest("div").find("input");
-    var $textarea = $(el).closest("div").find("textarea");
-    mostrar_modal_html("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",true,function(){
-        var $dialog = $("#json_props");
-        var params = {};
-        if ($input.val().length>0){
-            params = JSON.parse($input.val());
-        }
-        for (var param in params) {
-            $dialog.find("#div_fields tbody").append(html_new_param(param));
-            $dialog.find("#div_fields tbody tr").last().find("input[name='value']").val(params[param]);
-            
-        }
-
-        $dialog.find("button.add").click(function(){
-            $dialog.find("#div_fields tbody").append(html_new_param(""));
-            $dialog.find("#div_fields tbody").sortable({
-                // items:'div.param.sort',
-                // handle: ".handle"
-             });
-        });
-
-
-
-
-        $dialog.on("click","button.treure",function(){
-            $(this).closest("tr.param").remove();
-        });
-
-        var $button = $("<button>Save</button>").addClass("btn btn-success").click(function(){
-
-            $("#json_props #div_alert_wrap").html("");
-            var result = {};
-            $dialog.find("tr.param").not(".header").each(function(){
-                if ($(this).find("input[name='name']").val()!=""){
-
-                    var value = $(this).find("input[name='value']").val();
-                    if (value == "true"){
-                        result[$(this).find("input[name='name']").val()] = true;
-                    }else if (value == "false"){
-                        result[$(this).find("input[name='name']").val()] = false;
-                    }else if ( $.isNumeric(value) ){
-                        if (parseFloat(value)!= NaN){
-                            result[$(this).find("input[name='name']").val()] = parseFloat(value);
-                        }else if (parseInt(value)!= NaN){
-                            result[$(this).find("input[name='name']").val()] = parseInt(value);
-                        }
-                    }else{
-                        result[$(this).find("input[name='name']").val()] = $(this).find("input[name='value']").val();    
-                    }
-                 }
-            });
-            $input.val(JSON.stringify(result));
-            $textarea.val(Object.keys(result).join(", "));
-
-            $dialog.modal("hide");
-
-        });
-        $dialog.find("div.modal-footer").append($button);    
-    });
-
-    function addColumn(title,width,info){
-        return "<th><span style='display:inline-block;width:" + width + "px;'>" + title + " <a href='#' data-toggle='tooltip' data-placement='bottom' title='" + info + "'><i class='bi bi-info-circle-fill'></i></a></span>";
-    }
-    function html_header(){
-        var html = "<tr class='param header'>";
-        html += "<th><span style='display:inline-block;width:30px;'></span>";
-        html += addColumn("Key",90,"Property reference as appears in the results of the evaluation");
-        html += addColumn("Value",100,"Property name");
-        html += "<th><span style='display:inline-block;width:30px;'></span>";
-
-        html += "</tr>";
-        return html;
-    }
-    function html_new_param(name){
-        var html = "<tr class='param form-inline input-group-sm sort'>";
-
-        html += "<td><span class='handle'><i class='bi bi-arrow-down-up'></i></span></td>";
-        
-        html += "<td><input class='form-control' type='text' class='form-control' name='name' value='" + name + "' maxlength='50' /></td>";
-        html += "<td><input class='form-control' type='text' class='form-control' name='value' maxlength='45' /></td>";
-
-        html += "<td><button class='btn btn-danger btn-xs treure'><i class='bi bi-trash'></i></button></td>";
-        html += "</tr>";
-        return html;
-    }
-
-    function show_error(error){
-
-        let html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">' +
-        '<strong>' + error + '</strong></div>';
-        setTimeout(function(){
-            $("#json_props #div_alert_wrap").html(html);
-        },100);
-        
-    }    
-    
-}
-    function edit_json_method_metrics(el){
-        var $input = $(el).closest("div").find("input");
-        var $textarea = $(el).closest("div").find("textarea");
-
-        mostrar_modal_html("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",true,function(){
-            var $dialog = $("#json_props");
-            var params = {};
-            if ($input.val().length>0){
-                params = JSON.parse($input.val());
-            }
-            for (var param in params) {
-                $dialog.find("#div_fields tbody").append(html_new_param(param,params[param]));
-            }
-
-            $dialog.find("button.add").click(function(){
-                $dialog.find("#div_fields tbody").append(html_new_param("",""));
-                $dialog.find("#div_fields tbody").sortable({
-                    // items:'div.param.sort',
-                    // handle: ".handle"
-                 });
-            });
-
-
-
-
-            $dialog.on("click","button.treure",function(){
-                $(this).closest("tr.param").remove();
-            });
-
-            var $button = $("<button>Save</button>").addClass("btn btn-success").click(function(){
-
-                $("#json_props #div_alert_wrap").html("");
-                var result = {};
-                var count_order_graphic = [0,0,0,0,0,0];
-                var error = false;
-                $dialog.find("tr.param").not(".header").each(function(){
-                    if ($(this).find("input[name='name']").val()!=""){
-                        if($(this).find("select[name='order']").val()!=""){
-
-                            var graphic_num = $(this).find("select[name='grafic']").val();
-                            if(graphic_num!=""){
-                                count_order_graphic[graphic_num-1]++;
-                            }
-                        }
-                        result[$(this).find("input[name='name']").val()] = {
-                            "long_name":$(this).find("input[name='long_name']").val(), 
-                            "type":$(this).find("select[name='type']").val(),
-                            "order":$(this).find("select[name='order']").val(),
-                            "grafic":$(this).find("select[name='grafic']").val(),
-                            "format":$(this).find("select[name='format']").val(), 
-                            "groupby":$(this).find("select[name='groupby']").val(),
-                            "separation":$(this).find("select[name='separation']").val(),
-                            "table_group_name":$(this).find("input[name='table_group_name']").val(),
-                            "graphic_name":$(this).find("input[name='graphic_name']").val(),
-                            //"formula":$(this).find("input[name='formula']").val()
-                        };
-                    }
-                });
-                var any = false;
-                for (var i=0;i<6;i++){
-                    if(count_order_graphic[i]>0){
-                        any = true;
-                    }
-                    if(count_order_graphic[i]>1){
-                        show_error("Select only one parameter order for each grafic");
-                        error=true;
-                        return;
-                    }
-                }
-                if (!any){
-                    show_error("Select one parameter order");
-                    error=true;
-                    return;
-                }
-                if(!error){
-                    $input.val(JSON.stringify(result));
-                    $textarea.val(Object.keys(result).join(", "));
-
-                    $dialog.modal("hide");
-                }
-
-            });
-            $dialog.find("div.modal-footer").append($button);    
-        });
-
-        function addColumn(title,width,info){
-            return "<th><span style='display:inline-block;width:" + width + "px;'>" + title + " <a href='#' data-toggle='tooltip' data-placement='bottom' title='" + info + "'><i class='bi bi-info-circle-fill'></i></a></span>";
-        }
-        function html_header(){
-            var html = "<tr class='param header'>";
-            html += "<th><span style='display:inline-block;width:30px;'></span>";
-            html += addColumn("Reference",90,"Property reference as appears in the results of the evaluation");
-            html += addColumn("Title",100,"Property name");
-            html += addColumn("Type",80,"Type of the parameter. (int/double/string)");
-            html += addColumn("Order",70,"This field is used to rank the methods in Ascending or Descending order. Only one paramter for grafic is allowed.");
-            html += addColumn("Show",110,"not in grafic / grafic1 / grafic 2<br>The methods ranking page allow to display one or 2 graphics plotting the methods results values. You must select at least one paramter for ‘graphic 1’ and optionally one parameter for ‘graphic 2’. These parameters are the only ones that must have the field ‘order’ specified.");
-            html += addColumn("Format",110,"Normal / percentage. If set to percentage, the results will be showed in percent. (Result of that field should be float values from 0-1)");
-            html += addColumn("Grup by",90,"Method / Property. Decides if the results graphic are grouped by methods or properties");
-            html += addColumn("Separator",80,"None / Left / Right . Shows a vertical separator on the results table");
-            html += addColumn("Table group name",90,"Used to group similar properties (Repeat the same title on each property). If defined, it appears on a row over the property tile. ");
-            html += addColumn("Graphic title",90,"If defined, this title will be shown on the header of graphic");
-            html += "<th><span style='display:inline-block;width:30px;'></span>";
-            //html += addColumn("Formula",100,"Field value is calculated with a math formula. Paramter names inside brackets. Ex: ([Recall]+[Precision]/2)");
-
-            html += "</tr>";
-            return html;
-        }
-        function html_new_param(name,properties){
-            var html = "<tr class='param form-inline input-group-sm sort'>";
-
-            console.log(properties);
-            html += "<td><span class='handle'><i class='bi bi-arrow-down-up'></i></span></td>";
-            
-            html += "<td><input class='form-control' type='text' class='form-control' name='name' value='" + name + "' maxlength='50' /></td>";
-            html += "<td><input class='form-control' type='text' class='form-control' name='long_name' maxlength='45' value='" + escapeQuotes(properties.long_name!= undefined ? properties.long_name : "") + "' /></td>";
-            html += "<td><select class='form-control' name='type'>";
-            var types = ['integer','double','string'];
-            for(var i=0;i<types.length;i++){
-                var selected = (properties.type == types[i] ? " selected='selected'" : "");
-                html += "<option" + selected + " value='" + types[i] + "'>" + types[i] + "</option>";    
-            }
-            html += "</select></td>";
-            var orders = ['','asc','desc'];
-            html += "<td><select class='form-control' name='order'>";
-            for(var i=0;i<orders.length;i++){
-                var selected = (properties.order == orders[i] ? " selected='selected'" : "");
-                html += "<option" + selected + " value='" + orders[i] + "'>" + orders[i] + "</option>";    
-            }
-            html += "</select></td>";
-            var grafic = ['','1','2','3','4','5','6'];
-            var grafic_names = ['not in grafic','grafic 1','grafic 2','grafic 3','grafic 4','grafic 5','grafic 6'];
-            html += "<td><select class='form-control' name='grafic'>";
-            for(var i=0;i<grafic.length;i++){
-                var selected = (properties.grafic == grafic[i] ? " selected='selected'" : "");
-                html += "<option" + selected + " value='" + grafic[i] + "'>" + grafic_names[i] + "</option>";    
-            }
-            html += "</select></td>";
-            var format = ['','perc'];
-            var format_names = ['normal','percentage'];
-            html += "<td><select class='form-control' name='format'>";
-            for(var i=0;i<format.length;i++){
-                var selected = (properties.format == format[i] ? " selected='selected'" : "");
-                html += "<option" + selected + " value='" + format[i] + "'>" + format_names[i] + "</option>";    
-            }
-            html += "</select></td>";
-            var groupby = ['','perc'];
-            var groupby_names = ['method','property'];
-            html += "<td><select class='form-control' name='groupby'>";
-            for(var i=0;i<groupby.length;i++){
-                var selected = (properties.groupby == groupby[i] ? " selected='selected'" : "");
-                html += "<option" + selected + " value='" + groupby[i] + "'>" + groupby_names[i] + "</option>";    
-            }
-            html += "</select></td>";        
-            var separation = ['','left','right'];
-            var separation_names = ['none','left','right'];
-            html += "<td><select class='form-control' name='separation'>";
-            for(var i=0;i<separation.length;i++){
-                var selected = (properties.separation == separation[i] ? " selected='selected'" : "");
-                html += "<option" + selected + " value='" + separation[i] + "'>" + separation_names[i] + "</option>";    
-            }
-            html += "</select></td>";
-            html += "<td><input class='form-control' type='text' class='form-control' name='table_group_name' maxlength='45' value='" + escapeQuotes(properties.table_group_name!= undefined ? properties.table_group_name : "") + "' /></td>";
-            html += "<td><input class='form-control' type='text' class='form-control' name='graphic_name' maxlength='45' value='" + escapeQuotes(properties.grafic_name!= undefined ? properties.grafic_name : "") + "' /></td>";
-
-            //html += "<input class='form-control' type='text' class='form-control' name='formula' style='width:100px;' maxlength='150' value='" + escapeQuotes(properties.formula!= undefined ? properties.formula : "") + "' />";
-
-            html += "<td><button class='btn btn-danger btn-xs treure'><i class='bi bi-trash'></i></button></td>";
-            html += "</tr>";
-            return html;
-        }
-
-        function show_error(error){
-
-            let html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">' +
-            '<strong>' + error + '</strong></div>';
-            setTimeout(function(){
-                $("#json_props #div_alert_wrap").html(html);
-            },100);
-            
-        }    
-        
-    }
 
 
 

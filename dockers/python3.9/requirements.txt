@@ -3,18 +3,3 @@ fastapi==0.78.0
 gunicorn==20.1.0
 uvicorn==0.17.6
 python-multipart==0.0.5
-
-# Script Requirements
-#TODO: include your script dependencies here.
-#You will have to rebuild the docker after that. (docker-compose build)
-opencv-python>=4.5.5
-polygon3>=3.0.9.1
-pillow>=9.1.0
-#xlsxwriter>=3.0.3
-#editdistance>=0.6.0
-#pyxdameraulevenshtein>=1.7.0
-#hanziconv>=0.3.2
-#lxml>=4.8.0
-#motmetrics==1.1.3
-#Levenshtein>=0.18.1
-#munkres>=1.0.5.5

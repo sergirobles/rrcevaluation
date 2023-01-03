@@ -111,7 +111,7 @@
         The parameter <strong>gt</strong> is send with the value defined in the configuration. (/var/www/gt/{{ config.gt_path }})
       </p>
       <p class="card-text">
-        The parameter <strong>methodParams</strong> is send with the value ({{ config.methodParameters }}).
+        The parameter <strong>methodParams</strong> is send with the value (<span class="methodParameters">{{ config.methodParameters }}</span>).
       </p>
 
       <input type="hidden" name="gt" class="gtField" value="">
@@ -124,6 +124,25 @@
         <input class="form-control" type="file" name="resultsFile" id="formFile">
       
       </div>
+
+      {% if config.userParameters %}      
+        {% for parameter, parameterOptions in config.userParameters.items() %}
+
+          <div class="form-floating mb-4">
+          
+
+          <select class="form-select userParameter" name="{{ parameter }}">
+
+              {% for param in parameterOptions['values'] %} 
+
+                <option value="{{ param.value }}">{{ param.name }}</option>
+
+              {% endfor %}
+          </select>
+          <label>{{ parameterOptions.title }}</label>
+        </div>
+        {% endfor %}
+      {% endif %}      
 
       <div id="div_validate_response"></div>
 

@@ -10,6 +10,8 @@ import shutil
 import urllib.request as urllib2
 import http.cookiejar as cookielib
 import time
+import sys
+import subprocess
 
 sys.path.append("/code/scripts/")
 
@@ -257,3 +259,19 @@ def delete_older_submits():
             print(f" Delete : {i}")
             
             os.remove(file_location)
+
+
+@app1.get("/install")
+def install():
+    try:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', '/code/scripts/requirements.txt'])
+
+        # process output with an API in the subprocess module:
+        reqs = subprocess.check_output([sys.executable, '-m', 'pip','freeze'])
+        installed_packages = [r.decode().split('==')[0] for r in reqs.split()]
+
+        return {"result" : True, "packages": installed_packages}
+
+    except Exception as err:
+        resDict = {"result":False,"msg":"{0}".format(err)}
+        return resDict

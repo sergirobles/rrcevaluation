@@ -9,6 +9,7 @@ import uuid
 import shutil
 import urllib.request as urllib2
 import http.cookiejar as cookielib
+import re
 from jinja2 import Environment, FileSystemLoader
 sys.path.append("/code/scripts/")
 
@@ -159,6 +160,11 @@ async def index():
     template = env.get_template("api.html")
     return template.render(page="api",config=config())
 
+@app1.get('/configuration.html', response_class=HTMLResponse)
+async def index():
+    template = env.get_template("configuration.html")
+    return template.render(page="configuration",config=config())
+
 @app1.get("/config")
 def config():
     contents = {}
@@ -203,7 +209,7 @@ def methodResults():
 
 @app1.get("/samplesList")
 def samplesList():
-    contents = {}
+    contents = []
     try :
 
         configDict = config()
@@ -211,14 +217,28 @@ def samplesList():
         samples_file = "/var/www/gt/%s" % configDict['samples_path']
 
         archive = zipfile.ZipFile(samples_file, 'r')
-        contents = json.loads(archive.read('samples.json'))
+
+        if configDict['samplesListType'] == 'samples':
+            contents = json.loads(archive.read('samples.json'))
+            
+        else:
+
+            listOfiles = archive.namelist()
+
+            for file in listOfiles:
+
+                output = re.search(configDict['samplesRegExp'], file)
+
+                if output is not None:
+                    contents.append( {"id": output.group(1),"images":[file]})
+
         archive.close()
 
         return contents
 
     except Exception as e:   
         print(e)
-        return {}
+        return []
 
 
 error_msg = ""
@@ -257,15 +277,19 @@ def validate_config():
                 return {"result":False,"msg":"Samples file not exists"}
 
             archive = zipfile.ZipFile(samples_file, 'r')
-            if not "samples.json" in archive.namelist():
-                return {"result":False,"msg":"File samples.json not present in the samples zip"}
 
-            json_obj = json.loads(archive.read('samples.json'))
-            if not isinstance(json_obj, list) :
-                return {"result":False,"msg":"File samples.json not valid. Root element must be an array. [ {\"id\":\"sample1\",\"images\":[\"f1.jpg\",...]}, ... ]"}
+            if configDict['samplesListType'] == 'samples':
+                if not "samples.json" in archive.namelist():
+                    archive.close()
+                    return {"result":False,"msg":"File samples.json not present in the samples zip"}
+
+                json_obj = json.loads(archive.read('samples.json'))
+                if not isinstance(json_obj, list) :
+                    archive.close()
+                    return {"result":False,"msg":"File samples.json not valid. Root element must be an array. [ {\"id\":\"sample1\",\"images\":[\"f1.jpg\",...]}, ... ]"}
 
 
-            archive.close()                
+            archive.close()
 
 
         #TODO: validate id_exp
@@ -279,20 +303,31 @@ def validate_config():
 @app1.post("/save_config")
 def save_config( config: Optional[str] = Form("")):
 
-    try :
-        jsonVar = json.loads(config)
-        fd = open('/var/www/gt/config.json', "w")
-        fd.write(json.dumps(jsonVar, indent=4))
-        fd.close()
+    #try :
+    jsonVar = json.loads(config)
+    fd = open('/var/www/gt/config.json', "w")
+    fd.write(json.dumps(jsonVar, indent=4))
+    fd.close()
 
-        if os.path.exists('/var/www/submits/results.zip'):
-            os.unlink('/var/www/submits/results.zip')
+    if os.path.exists('/var/www/submits/results.zip'):
+        os.unlink('/var/www/submits/results.zip')
 
-        return {"result":True}
+    fd = open('/var/www/gt/requirements.txt', "w")
+    for item,value in jsonVar['scriptRequirements'].items():
+        fd.write("%s==%s" % (item,value))
+    fd.close()
 
+    #Install PIP requirements
+    try:
+        urllib2.urlopen("http://host.docker.internal:9020/install")
     except Exception as e:    
-        print(e)
-        return {"result":False,"msg":e}
+        print(e)    
+
+    return {"result":True}
+
+    #except Exception as e:    
+    #    print(e)
+    #    return {"result":False,"msg":e}
 
 @app1.post("/download_results")
 def download_results( url: Optional[str] = Form("")):
@@ -404,6 +439,12 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
         gt_path = '/var/www/gt/%s' % configDict["gt_path"]
         example_gt_path = example_path + '/gt/' + configDict["gt_path"]
         shutil.copyfile(example_gt_path, gt_path)        
+
+        #Install PIP requirements
+        try:
+            urllib2.urlopen("http://host.docker.internal:9020/install")
+        except Exception as e:    
+            print(e)
 
         return {"result":True}
 
