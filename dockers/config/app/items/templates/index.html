@@ -4,43 +4,64 @@
 
     <div class="tab-pane fade show active">
 
-      <h2>Instructions</h2>    
+      <div class="card mb-4">
 
-      <div class="row">
-        <div class="col">
-          <b>Python 3.9</b>
-          <ol>
-            <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
-            <li>Implement your evaluation script. (/scripts/script.py)</li>
-            <li>Add your evaluation script dependencies on (requirements.txt) file (rebuild docker)</li>
-            <li>Edit the configuration</li>
-            <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
-            <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
-          </ol>
-        </div>
-        <div class="col">
-          <b>Other Python version</b>
-          <ol>
-            <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
-            <li>Implement your evaluation script. (/scripts/script.py)</li>
-            <li>Change the Docker image in the Dockerfile and add your evaluation script dependencies on (requirements.txt) file. (rebuild docker)</li>
-            <li>Edit the configuration</li>
-            <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
-            <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
-          </ol>
-        </div>
-          <div class="col">
-            <b>Other Languages</b>
-            <ol>
-              <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
-              <li>Implement the evaluation docker with you prefered language. (rebuild doker)</li>
-              <li>Edit the configuration</li>
-              <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
-              <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
-            </ol>
+        <div class="card-body">
+          <div class="row">
+
+            
+            <div class="col-4">
+
+              
+
+              <ul class="list-group mb-3">
+      
+                <li class="list-group-item active" aria-current="true" data-bs-toggle="tab" data-bs-target="#instructions_p39">Python 3.9</li>
+                <li class="list-group-item" data-bs-toggle="tab" data-bs-target="#instructions_p">Other Python version</li>
+                <li class="list-group-item" data-bs-toggle="tab" data-bs-target="#instructions_o">Other Languages</li>
+      
+              </ul>
+            </div>
+      
+            <div class="col-8 tab-content">
+      
+              <h5 class="card-title">Instructions</h5> 
+              <div class="tab-pane fade show active" id="instructions_p39" role="tabpanel" tabindex="0">
+                <ol>
+                  <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
+                  <li>Implement your evaluation script. (/scripts/script.py)</li>
+                  <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
+                  <li>Edit the configuration</li>
+                  <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
+                </ol>
+            </div>          
+              <div class="tab-pane fade" id="instructions_p" role="tabpanel" tabindex="0">
+                <ol>
+                  <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
+                  <li>Implement your evaluation script. (/scripts/script.py)</li>
+                  <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
+                  <li>Change the Docker image in the Dockerfile (and rebuild docker)</li>
+                  <li>Edit the configuration</li>
+                  <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
+                </ol>
+              </div>
+      
+              <div class="tab-pane fade" id="instructions_o" role="tabpanel" tabindex="0">
+                <ol>
+                  <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
+                  <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
+                  <li>Implement the evaluation docker with you prefered language. (rebuild doker)</li>
+                  <li>Edit the configuration</li>
+                  <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
+                </ol>
+              </div>
+      
+      
+            </div>
+      
           </div>
       </div>
-
+    </div>
 
       <div class="row">
 
@@ -98,8 +119,7 @@
                 <li>Python scripts (v.3.9) or your custom docker</li>
                 <li>Samples (optional)</li>
                 <li>Configuration file</li>
-                <li>Requirements file</li>
-                <li>Submition sample</li>
+                <li>Submition sample (the last evaluated method)</li>
               </ul>
 
               <div id="div_msg_export"></div>
