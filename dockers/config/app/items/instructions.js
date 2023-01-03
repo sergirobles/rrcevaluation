@@ -2,47 +2,70 @@
 $(function() {
 
 
-    examples = {
-        "https://www.hipicgest.com/med/rrc/IST.zip":"RRC Incidental Scene Text 2015",
-        "https://www.hipicgest.com/med/rrc/FST.zip":"RRC Focused Scene Text (Segmentation task)",
-        "https://www.hipicgest.com/med/rrc/SimpleExample.zip":"Simple Example"
-    }
 
-    for( example in examples){
-        $('#selectExample').append(new Option(examples[example], example))
-    }
+
+    html_modal_content
     
+    $("#btnImportRRC").click(function(){
 
+        var html = "<ul id='ul_examples' class='list-group'></ul>";
+        var html_footer = `<button type="button" class="card-link btn btn-warning" id="btnImport">Load</button>`
 
-    $("#btnImport").click(function(){
+        show_html_modal("Import an RRC example",html,html_footer,"modal_import",false,function(){
 
-        if($("#selectExample").val()==""){
-            $("#div_msg_example").html("<div class='alert alert-danger'>Select the example</div>");
-        }
-        $("#btnImport").prop("disabled",true);
-        $("#div_msg_example").html(`<div class='alert alert-info'>
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>Please wait, downloading example..</div>`);
-
-        $.post("./load_example", {"example":$("#selectExample").val()},function(data){
-        
-            $("#btnImport").prop("disabled",false);
-        
-            if(data.result){
-                
-
-                $("#div_msg_example").html("<div class='alert alert-success'>Example loaded</div>");
-
-            }else{
-                
-                $("#div_msg_example").html("<div class='alert alert-danger'>" + data.msg + "</div>");
-
+            examples = {
+                "https://www.hipicgest.com/med/rrc/IST.zip":"RRC Incidental Scene Text 2015",
+                "https://www.hipicgest.com/med/rrc/FST.zip":"RRC Focused Scene Text (Segmentation task)",
+                "https://www.hipicgest.com/med/rrc/SimpleExample.zip":"Simple Example"
             }
-    
-        },"json");
+        
+            for( example in examples){
+                $('#ul_examples').append("<li class='list-group-item'>" + examples[example] + "</li>");
+            }
 
+            $('#ul_examples li').on("click",function(){
+                $('#ul_examples li').not($(this)).removeClass("active");
+                $(this).toggleClass("active");
+            });
+
+            $("#btnImport").click(function(){
+
+                if( !$("#ul_examples li.active").length ){
+                    $("#div_msg_example").html("<div class='alert alert-danger'>Select the example</div>");
+                    return;
+                }
+                $("#btnImport").prop("disabled",true);
+                $("#div_msg_example").html(`<div class='alert alert-info'>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>Please wait, downloading example..</div>`);
+
+                var url = Object.keys(examples)[$("#ul_examples li.active").index()];
+
+                $("#modal_import").modal("hide");
+        
+                $.post("./load_example", {"example": url  },function(data){
+                
+                    if(data.result){
+                        
+        
+                        $("#div_msg_example").html("<div class='alert alert-success'>Example loaded</div>");
+        
+                    }else{
+                        
+                        $("#div_msg_example").html("<div class='alert alert-danger'>" + data.msg + "</div>");
+        
+                    }
+            
+                },"json");
+        
+            });            
+
+        });
     });
+
+
+
 
 
     $('#formFile').on("change", function(){ 

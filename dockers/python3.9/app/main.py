@@ -145,8 +145,11 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
             evalData['msg'] = evalData['Message']
             del evalData['Message']
 
-        if evalData['result'] == False:
-            return {"result":False,"msg":evalData['msg']}
+        if 'result' in evalData and evalData['result'] == False:
+            return {"result":False,"msg": evalData['msg'] if 'msg' in evalData else 'Unknown Error on calculation' }
+
+        if not 'method' in evalData:
+            return {"result":False,"msg": "Result from script has no method key" }
 
         resDict['method'].update(evalData['method'])
 

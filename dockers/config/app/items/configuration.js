@@ -115,7 +115,7 @@ $(function() {
 function edit_json_script_requirements (el){
     var $input = $(el).closest("div").find("input");
     var $textarea = $(el).closest("div").find("textarea");
-    mostrar_modal_html("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",false,function(){
+    show_html_modal("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",false,function(){
         var $dialog = $("#json_props");
         var params = {};
         if ($input.val().length>0){
@@ -196,7 +196,7 @@ function edit_json_script_requirements (el){
 function edit_json_method_params (el){
     var $input = $(el).closest("div").find("input");
     var $textarea = $(el).closest("div").find("textarea");
-    mostrar_modal_html("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",false,function(){
+    show_html_modal("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",false,function(){
         var $dialog = $("#json_props");
         var params = {};
         if ($input.val().length>0){
@@ -306,7 +306,7 @@ function edit_json_method_params (el){
 function edit_json_user_params (el){
     var $input = $(el).closest("div").find("input");
     var $textarea = $(el).closest("div").find("textarea");
-    mostrar_modal_html("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",true,function(){
+    show_html_modal("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",true,function(){
         var $dialog = $("#json_props");
         var params = {};
         if ($input.val().length>0){
@@ -475,7 +475,7 @@ function edit_json_method_metrics(el){
     var $input = $(el).closest("div").find("input");
     var $textarea = $(el).closest("div").find("textarea");
 
-    mostrar_modal_html("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",true,function(){
+    show_html_modal("Configurate Parameters","<table class='table table-striped table-sm' id='div_fields'><thead>" + html_header() + "</thead><tbody></tbody></table><button class='btn btn-primary add'><i class='bi bi-plus'></i></button><div id='div_alert_wrap'></div>","<span></span>","json_props",true,function(){
         var $dialog = $("#json_props");
         var params = {};
         if ($input.val().length>0){

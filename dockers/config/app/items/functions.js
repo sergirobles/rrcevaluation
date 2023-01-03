@@ -220,7 +220,7 @@ modal_html += '</div>'+
 '</div>';    
 return modal_html;
 };
-function mostrar_modal_html(title,html,html_footer,id,large,callback){
+function show_html_modal(title,html,html_footer,id,large,callback){
     if (id==undefined){
         id = uniqId();
     }else if (id==""){

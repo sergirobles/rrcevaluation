@@ -79,24 +79,17 @@
                 Note that if you import an example, all the files on the mounted volumes (gt, submits, scripts) will be cleared.
               </div>
 
-              <div class="form-floating mb-4">
-                    
-                <select class="form-select" name="res_ext" aria-label="Results extension" id="selectExample" placeholder="Results extension" data-bs-toggle="tooltip" data-bs-title="Select the example to load.">
-                    <option selected></option>
-                    </select>
-                    <label for="selectExample">Load example from RRC</label>
-              </div>
 
               <div id="div_msg_example"></div>
 
               <div class="row">
 
                 <div class="col">
-                  <button type="button" class="card-link btn btn-warning" id="btnImport">Load example from RRC</button>
+                  <button type="button" class="card-link btn btn-warning" id="btnImportRRC">Load example from RRC..</button>
                 </div>
                 <div class="col">
                   <form id="form_example_local">
-                  <label for="formFile" class="card-link btn btn-warning" id="btnImportFile">Load from local file</label>
+                  <label for="formFile" class="card-link btn btn-warning" id="btnImportFile">Load from local file..</label>
                   <input class="form-control" type="file" name="exampleFile" accept=".zip" id="formFile" style="display:none;">
                  </form>
                 </div>
@@ -135,6 +128,13 @@
       </div>
 
     </div>
+
+    <div id="divModalExample">
+
+      
+    </div>
+
+
 {% endblock %}
 
 

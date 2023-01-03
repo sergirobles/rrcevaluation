@@ -264,6 +264,12 @@ def validate_config():
         if not resMethodMetrics['result']:
             return resMethodMetrics
 
+        if configDict['script'] != "":
+            script_file = "/code/scripts/%s.py" % configDict['script']
+            if os.path.isfile(script_file) == False:
+                return {"result":False,"msg":"Script file not found"}
+
+
         if not 'samples' in configDict:
             return {"result":False,"msg":"Configuration error: Missing 'samples' key"}
 
@@ -288,11 +294,18 @@ def validate_config():
                     archive.close()
                     return {"result":False,"msg":"File samples.json not valid. Root element must be an array. [ {\"id\":\"sample1\",\"images\":[\"f1.jpg\",...]}, ... ]"}
 
+            else:
+                listOfiles = archive.namelist()
+                hasFiles = False
+                for file in listOfiles:
+                    output = re.search(configDict['samplesRegExp'], file)
+                    if output is not None:
+                        hasFiles = True
+                        break
+                if hasFiles == False:
+                    return {"result":False,"msg":"No files in the samples ZIP match the regular expresion"}
 
             archive.close()
-
-
-        #TODO: validate id_exp
 
         return {"result":True}
 
@@ -312,9 +325,9 @@ def save_config( config: Optional[str] = Form("")):
     if os.path.exists('/var/www/submits/results.zip'):
         os.unlink('/var/www/submits/results.zip')
 
-    fd = open('/var/www/gt/requirements.txt', "w")
+    fd = open('/code/scripts/requirements.txt', "w")
     for item,value in jsonVar['scriptRequirements'].items():
-        fd.write("%s==%s" % (item,value))
+        fd.write("%s==%s\n" % (item,value))
     fd.close()
 
     #Install PIP requirements

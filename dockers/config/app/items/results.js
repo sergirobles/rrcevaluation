@@ -87,7 +87,11 @@ function show_samples(){
     $("#div_sample_visualization").addClass("d-none");
 
     if(samples.total==0){
-        html = "<div class='alert alert-danger'>No samples defined. The zip file must contain the entry <b>samples.json</b> with the samples relation. [ {\"id\":\"sample1\",\"images\":[\"f1.jpg\",...]}, ... ]</div>"
+        if (configuration.samplesListType == "samples"){
+            html = "<div class='alert alert-danger'>No samples defined. The zip file must contain the entry <b>samples.json</b> with the samples relation. [ {\"id\":\"sample1\",\"images\":[\"f1.jpg\",...]}, ... ]</div>"
+        }else{
+            html = "<div class='alert alert-danger'>No samples in the zip matches the regular expresion</div>"
+        }
     }else{
 
         var start = (samples.page-1) * numSamplesPage + 1;
