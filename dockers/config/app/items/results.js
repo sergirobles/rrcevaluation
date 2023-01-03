@@ -343,7 +343,7 @@ function html_ranking(config){
 
 
         },"json").fail(function() {
-            $("#div_ranking").html("<div class='alert alert-warning'>You have to evaluate a method before from the API functions tab.</div>");
+            $("#div_ranking").html("<div class='alert alert-warning'>You have to evaluate a method before from the API methods tab.</div>");
             return;
         });
 
