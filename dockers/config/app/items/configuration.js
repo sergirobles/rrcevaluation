@@ -682,13 +682,13 @@ function save_config(){
     //changing to boolean
     out["samples"] = out["samples"]=="on";
 
-    $("#div_task #div_msg").html("");
+    $("#div_task #div_msg").html( alert_info(spinner() + " Saving configuration (and installing dependencies)") );
     $.post("./save_config", {"config":JSON.stringify(out)},function(data){
         
         
         if(data.result){
             configuration = out;
-            $("#div_msg").html("<div class='alert alert-success p-2'>Saved</div>");
+            $("#div_task #div_msg").html("<div class='alert alert-success p-2'>Saved</div>");
         }else{
             $("#div_task #div_msg").html(data.msg);
         }

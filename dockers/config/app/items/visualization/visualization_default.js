@@ -353,7 +353,7 @@ ClassVisualization.prototype.load_visualization = function(){
 
     var images = samples.data[visualization.sampleNum-1].images;
     for (var i=0;i<images.length;i++){
-        var urlGtImg = "/samples/" + images[i]
+        let urlGtImg = this.getSamplesFile(images[i])
         $("#div_sample").append("<img src='" + urlGtImg + "'>");
     }
 

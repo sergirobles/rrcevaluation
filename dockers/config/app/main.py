@@ -125,9 +125,33 @@ async def read_item(item_id: str):
             media_type = "application/javascript"
         
     return FileResponse(path , media_type=media_type)
+
+
 @app1.get( "/items/visualization/{item_id}")
 async def read_item(item_id: str):
     path = "/code/items/visualization/%s" % item_id
+    if os.path.isfile(path) == False:
+        return JSONResponse(status_code=404, content={"message": "Item not found"})
+
+    extension = os.path.splitext(item_id)[1][1:]
+    if extension == 'jpg' or extension == 'jpeg':
+        media_type = "image/jpeg"
+    elif extension == 'png':
+        media_type = "image/png"
+    elif extension == 'mp4':
+        media_type = "video/mp4"        
+    elif extension == 'css':
+        media_type = "text/css"                
+    elif extension == 'js':
+        media_type = "application/javascript"
+
+        
+    return FileResponse(path , media_type=media_type)
+
+
+@app1.get( "/items/visualization/custom/{item_id}")
+async def read_item(item_id: str):
+    path = "/code/items/visualization/custom/%s" % item_id
     if os.path.isfile(path) == False:
         return JSONResponse(status_code=404, content={"message": "Item not found"})
 
@@ -290,6 +314,9 @@ def validate_config():
 
             archive = zipfile.ZipFile(samples_file, 'r')
 
+            if not 'samplesListType' in configDict:
+                return {"result":False,"msg":"Configuration error: Missing 'samplesListType' key"}
+
             if configDict['samplesListType'] == 'samples':
                 if not "samples.json" in archive.namelist():
                     archive.close()
@@ -317,7 +344,7 @@ def validate_config():
 
     except Exception as e:    
         print(e)
-        return {"result":False,"msg":e}
+        return {"result":False,"msg": e if isinstance(e, str) else e['msg'] }
 
 @app1.post("/save_config")
 def save_config( config: Optional[str] = Form("")):
@@ -344,9 +371,6 @@ def save_config( config: Optional[str] = Form("")):
 
     return {"result":True}
 
-    #except Exception as e:    
-    #    print(e)
-    #    return {"result":False,"msg":e}
 
 @app1.post("/download_results")
 def download_results( url: Optional[str] = Form("")):
@@ -459,6 +483,11 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
         example_gt_path = example_path + '/gt/' + configDict["gt_path"]
         shutil.copyfile(example_gt_path, gt_path)        
 
+        if configDict["visualization"] == "custom":
+            shutil.copyfile(example_path + '/visualization/custom.css', '/code/items/visualization/custom/custom.css')        
+            shutil.copyfile(example_path + '/visualization/custom.js', '/code/items/visualization/custom/custom.js')        
+   
+
         #Install PIP requirements
         try:
             urllib2.urlopen("http://host.docker.internal:9020/install")
@@ -471,7 +500,7 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
 @app1.get("/export")
 def export():
 
-    #try :
+    try :
 
         configDict = config()
 
@@ -512,13 +541,16 @@ def export():
             if os.path.exists(method_path) == True and os.path.isfile(method_path) == True :
                 zf.write(method_path,'/submits/method.%s' % configDict["res_ext"] )
 
+            if configDict["visualization"] == "custom":
+                zf.write('/code/items/visualization/custom/custom.css','/visualization/custom.css')
+                zf.write('/code/items/visualization/custom/custom.js','/visualization/custom.js')
+
             zf.close()
 
             return FileResponse(zip_path , media_type="application/zip") 
 
-    #except Exception as e:    
-
-    #    return {"result":False,"msg":e}     
+    except Exception as e:    
+        return {"result":False,"msg":e}     
 
 def file_get_contents(url):
     url = str(url).replace(" ", "+") # just in case, no space in url

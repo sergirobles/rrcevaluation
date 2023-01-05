@@ -7,6 +7,7 @@ services:
       - ${GT_VOL_PATH}:/var/www/gt
       - ${SUBMITS_VOL_PATH}:/var/www/submits
       - ${SCRIPTS_VOL_PATH}:/code/scripts
+      - ${VISUALIZATION_VOL_PATH}:/code/items/visualization/custom/
     ports:
       - "9010:80"
     restart: ${RESTART}

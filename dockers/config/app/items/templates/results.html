@@ -83,7 +83,12 @@
   <script src="items/visualization/visualization_default.js"></script>
   <link rel='stylesheet' href='items/visualization/visualization.css' />
 
-  {% if config.visualization != "" and config.visualization != "Default visualization" %}
+
+  {% if config.visualization == "custom" %}
+    <link rel='stylesheet' href='items/visualization/custom/custom.css' />
+    <script src="items/visualization/custom/custom.js"></script>
+
+  {% elif config.visualization != "" and config.visualization != "Default visualization" %}
     <link rel='stylesheet' href='items/visualization/visualization_{{ config.visualization }}.css' />
     <script src="items/visualization/visualization_{{ config.visualization }}.js"></script>
 

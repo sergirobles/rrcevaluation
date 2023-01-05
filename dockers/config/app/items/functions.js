@@ -7,6 +7,8 @@ function updateMethodParameters($form){
         values[$(this).prop("name")] = $(this).val();
     });
 
+    $("input[name='methodParams'").val(JSON.stringify(values));
+
     $form.find("span.methodParameters").html(JSON.stringify(values));
 }
 
@@ -106,10 +108,7 @@ $(function() {
         request.open("POST", "http://localhost:9020/evaluate");
         request.responseType = 'json';
 
-        output.innerHTML = `<div class='alert alert-info'>
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>Please wait, calculating results..</div>`   
+        output.innerHTML = `<div class='alert alert-info'>` + spinner() + `Please wait, calculating results..</div>`   
 
         request.onload = (progress) => {
 
@@ -185,7 +184,16 @@ function load_config(callback){
     });
 }
 
-
+function alert_error(msg){
+    return '<div class="alert alert-error">' + msg + '</div>';
+}
+function alert_info(msg){
+    return '<div class="alert alert-info">' + msg + '</div>';
+}
+function spinner(){
+    return '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+        
+}
 
 
 
