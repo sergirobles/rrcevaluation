@@ -9,10 +9,47 @@ To hold a competition on the RRC site you have to:
     - Enter details on the configuration file
 
 
-## Submition validation
-This method must validate the submition file/s and verify that all files have the correct format (all required fields are present and have to correct type) and the sample IDs matches the Ground Truth ones.
+## Working with Python
+If your evaluation script it's in Python, you can use the example docker we provide and adapt your script to implement the following 2 functions:
 
-### [POST] /validate
+### def validate_data()
+This method have to validate that the results file is correct validating all contents and format types. If the results file is a zip file, validate aldo the format of all files. 
+If some error detected, raise an error eith information hellping the user to fix the error
+
+INPUT:
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| gtFilePath | String/required | Internal path of the Ground Truth. |
+| submFilePath | String/required | Internal path with the results file. |
+| evaluationParams | Dict | Dict with the parameters. If in your script you have defined the function default_evaluation_params, this paramter will return that function values updating it with the parameters defined in the task configuration. |
+
+### def evaluate_method()
+This method have to evaluate the submited method and fill an output dictionary
+
+INPUT:
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| gtFilePath | String/required | Internal path of the Ground Truth. |
+| submFilePath | String/required | Internal path with the results file. |
+| evaluationParams | Dict | Dict with the parameters. If in your script you have defined the function default_evaluation_params, this paramter will return that function values updating it with the parameters defined in the task configuration. |
+
+OUTPUT:
+A Dict with the following parameters:
+| Parameter | Type | Description |
+| --- | --- | --- |
+| result | Boolean/optional | The evaluation have been completed |
+| msg | String/optional | Error description if there's error on the evaluation  |
+| method | Dict | Dict with the method results. At least all metrics defined in the configuration must be present here. |
+| per_sample | Dict/optional | Dict with the results per sample. The keys are the sample IDs and in the values at least all metrics defined in the configuration must be present. |
+| output_items | Dict/optional | Dict with extra files that you can use on the visualization |
+
+
+## Implementing your own docker
+
+### Submition validation [POST] /validate
+This method must validate the submition file/s and verify that all files have the correct format (all required fields are present and have to correct type) and the sample IDs matches the Ground Truth ones.
 
 INPUT:
 
@@ -35,11 +72,9 @@ A JSON string with the following Dict:
 
 
 
-## Results calculation
+### Results calculation [POST] /evaluate
 This method evaluates the submition and calculates the results. If you want to show per sample information, the method has to generate a ZIP file with the file ‘method.json’ containing the method metrics results and also add individual sample information, adding the file {Sample ID}.json for each sample. Also, if your visualization requires extra information, you can add more files to the ZIP file so you can use it in your visualization.
 
-
-### [POST] /evaluate
 
 INPUT:
 | Parameter | Type | Description |

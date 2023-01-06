@@ -32,3 +32,19 @@ td.left, th.left {
 #div_sample h3{
     font-size: 14pt;
 }
+.card.sample{
+    margin-bottom: 1rem;
+}
+.card.sample card-title{
+    font-size: 12pt;
+}
+.card.sample div.param{
+    color: #777;
+    font-size: 10pt;
+}
+.card.sample div.param span.value{
+    font-weight: bold;
+    margin-left: 4px;
+    color: #000;
+    font-size: 12pt;
+}

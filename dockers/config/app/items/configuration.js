@@ -30,6 +30,13 @@ $(function() {
             }
         });
   
+
+      $("#div_task form input,#div_task form select").change(function(){
+        $("#btnValidate").prop("disabled",true);
+        $("#div_validation").html(alert_warning("Save config before validate.",true));
+      });
+
+
       $("#buttonParameters").click(function(){
           edit_json_method_params(this);
     
@@ -152,7 +159,7 @@ function edit_json_script_requirements (el){
                     
                  }
             });
-            $input.val(JSON.stringify(result));
+            $input.val(JSON.stringify(result)).trigger("change");
             $textarea.val(Object.keys(result).join(", "));
 
             $dialog.modal("hide");
@@ -256,7 +263,7 @@ function edit_json_method_params (el){
 
                  }
             });
-            $input.val(JSON.stringify(result));
+            $input.val(JSON.stringify(result)).trigger("change");
             $textarea.val(Object.keys(result).join(", "));
 
             $dialog.modal("hide");
@@ -401,7 +408,7 @@ function edit_json_user_params (el){
 
                  }
             });
-            $input.val(JSON.stringify(result));
+            $input.val(JSON.stringify(result)).trigger("change");
             $textarea.val(Object.keys(result).join(", "));
 
             $dialog.modal("hide");
@@ -546,7 +553,7 @@ function edit_json_method_metrics(el){
                 return;
             }
             if(!error){
-                $input.val(JSON.stringify(result));
+                $input.val(JSON.stringify(result)).trigger("change");
                 $textarea.val(Object.keys(result).join(", "));
 
                 $dialog.modal("hide");
@@ -661,6 +668,8 @@ function save_config(){
     let fields = $("#div_task form").serializeArray();
     let out = {};
 
+    $("#btnValidate").prop("disabled",true);
+
     for(var i=0;i<fields.length;i++){
 
         let field = fields[i];
@@ -682,13 +691,16 @@ function save_config(){
     //changing to boolean
     out["samples"] = out["samples"]=="on";
 
-    $("#div_task #div_msg").html( alert_info(spinner() + " Saving configuration (and installing dependencies)") );
+    $("#div_task #div_msg").html( alert_info(spinner() + " Saving configuration (and installing dependencies)", true) );
     $.post("./save_config", {"config":JSON.stringify(out)},function(data){
         
         
         if(data.result){
             configuration = out;
-            $("#div_task #div_msg").html("<div class='alert alert-success p-2'>Saved</div>");
+            $("#div_task #div_msg").html(alert_success('Saved',true));
+            $("#div_validation").html("");
+            $("#btnValidate").prop("disabled",false);
+
         }else{
             $("#div_task #div_msg").html(data.msg);
         }
@@ -699,9 +711,9 @@ function save_config(){
 function validate_config(){
     $.get("./validate_config",function(data){
         if(data.result){
-            html = '<div class="alert alert-success p-2">Configuration is correct</div>';
+            html = alert_success('Configuration is correct',true);
         }else{
-            html = '<div class="alert alert-warning p-2">Error: ' + data.msg + '</div>';
+            html = alert_error('Error: ' + data.msg, true);
         }
         $("#div_validation").html(html);
 

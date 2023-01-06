@@ -184,12 +184,20 @@ function load_config(callback){
     });
 }
 
-function alert_error(msg){
-    return '<div class="alert alert-error">' + msg + '</div>';
+
+function alert_success(msg,compact){
+    return '<div class="alert alert-success' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
 }
-function alert_info(msg){
-    return '<div class="alert alert-info">' + msg + '</div>';
+function alert_error(msg,compact){
+    return '<div class="alert alert-error' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
 }
+function alert_info(msg,compact){
+    return '<div class="alert alert-info' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
+}
+function alert_warning(msg,compact){
+    return '<div class="alert alert-warning' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
+}
+
 function spinner(){
     return '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
         
