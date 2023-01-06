@@ -13,7 +13,7 @@ To hold a competition on the RRC site you have to:
 If your evaluation script it's in Python, you can use the example docker we provide and adapt your script to implement the following 2 functions:
 
 ### def validate_data()
-This method have to validate that the results file is correct validating all contents and format types. If the results file is a zip file, validate aldo the format of all files. 
+This method have to validate that the results file is correct validating all contents and format types. If the results file is a zip file, validate also the format of all files. 
 If some error detected, raise an error eith information hellping the user to fix the error
 
 INPUT:
@@ -47,6 +47,8 @@ A Dict with the following parameters:
 
 
 ## Implementing your own docker
+As working with docker, you can opt for your preferred programming language. The calculations but must be implemented on the same machine, you can’t call any external service for that purpose.
+Your docker must implement a REST service with docker implementing the following 2 methods:
 
 ### Submition validation [POST] /validate
 This method must validate the submition file/s and verify that all files have the correct format (all required fields are present and have to correct type) and the sample IDs matches the Ground Truth ones.
@@ -123,12 +125,8 @@ Metric properties
 | graphic_name | String | If defined, this title will be shown on the header of graphic |
 
 
-# Docker
+# Docker example
 
-As working with docker, you can opt for your preferred programming language. The calculations but must be implemented on the same machine, you can’t call any external service for that purpose.
-
-
-## Docker example
 The current example have 2 dockers, one for the configuration and test and the other for the evaluation.
 The evaluation docker example comes with Python 3.9.
 ```
