@@ -22,7 +22,7 @@ INPUT:
 | --- | --- | --- |
 | gtFilePath | String/required | Internal path of the Ground Truth. |
 | submFilePath | String/required | Internal path with the results file. |
-| evaluationParams | Dict | Dict with the parameters. If in your script you have defined the function default_evaluation_params, this paramter will return that function values updating it with the parameters defined in the task configuration. |
+| evaluationParams | Dict | Dict with the parameters. If in your script you have defined the function default_evaluation_params, this paramter will return that function values updating them with the parameters defined in the task configuration. |
 
 ### def evaluate_method()
 This method have to evaluate the submited method and fill an output dictionary
@@ -33,7 +33,7 @@ INPUT:
 | --- | --- | --- |
 | gtFilePath | String/required | Internal path of the Ground Truth. |
 | submFilePath | String/required | Internal path with the results file. |
-| evaluationParams | Dict | Dict with the parameters. If in your script you have defined the function default_evaluation_params, this paramter will return that function values updating it with the parameters defined in the task configuration. |
+| evaluationParams | Dict | Dict with the parameters. If in your script you have defined the function default_evaluation_params, this paramter will return that function values updating them with the parameters defined in the task configuration. |
 
 OUTPUT:
 A Dict with the following parameters:
@@ -42,7 +42,7 @@ A Dict with the following parameters:
 | result | Boolean/optional | The evaluation have been completed |
 | msg | String/optional | Error description if there's error on the evaluation  |
 | method | Dict | Dict with the method results. At least all metrics defined in the configuration must be present here. |
-| per_sample | Dict/optional | Dict with the results per sample. The keys are the sample IDs and in the values at least all metrics defined in the configuration must be present. |
+| per_sample | Dict/optional | Dict with the results per sample. The keys are the sample IDs and the values are at least all metrics defined in the configuration. |
 | output_items | Dict/optional | Dict with extra files that you can use on the visualization |
 
 
@@ -51,7 +51,7 @@ As working with docker, you can opt for your preferred programming language. The
 Your docker must implement a REST service with docker implementing the following 2 methods:
 
 ### Submition validation [POST] /validate
-This method must validate the submition file/s and verify that all files have the correct format (all required fields are present and have to correct type) and the sample IDs matches the Ground Truth ones.
+This method must validate the submition file/s and verify that all files have the correct format (all required fields are present and have to correct type) and the sample IDs match the Ground Truth ones.
 
 INPUT:
 
@@ -104,6 +104,11 @@ You have to provide a configuration JSON file about the task and the metrics exp
 | title | String | The task title |
 | gt_path | String | The ground truth file path (located on the gt folder) |
 | res_ext | String | Expected extension for the submitions (json,zip,jsonl,txt) |
+| uploadInstructions | String | Describe the internal format of the submition file. (If it's zip file describe the format of the entries) |
+| script | String | Script filename (without .py extension) of your evaluation. (placed in the /scripts/ folder) |
+| scriptRequirements | Dict | PIP requirements of your script. Specify an exact version for each requirement.  |
+| userParameters | Dict | Define parameters that user will have to manually select when uploading the results. These values will update the methodParameters param. Format: [{"paramKey":}] |
+| methodParameters | Dict | Dict of parameters (key=>value) to send to the validation and evaluation API functions. |
 | methodMetrics | JSON Dict | A JSON dictionary (metric: properties) defining all the metrics expected for the method result. On the following table you have the properties for each metric.  |
 | samples | Boolean | Indicates if the evaluation gives results per sample.  |
 | samples_path | String | The samples file path (.zip) (located on the gt folder)  |
