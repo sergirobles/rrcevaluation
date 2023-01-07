@@ -13,10 +13,11 @@ import re
 from jinja2 import Environment, FileSystemLoader
 sys.path.append("/code/scripts/")
 
-from fastapi import FastAPI, File, UploadFile, Request, status, Form
+from fastapi import FastAPI, UploadFile, Request, status, Form
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, Response
+
 from pydantic import BaseModel
 
 app1 = FastAPI()
@@ -417,8 +418,33 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
         fd.close()
 
     else:
-        with urllib2.urlopen(example) as response, open(zip_path, 'wb') as out_file:
-            shutil.copyfileobj(response, out_file)
+        with urllib2.urlopen(example) as response:
+            out_file = open(zip_path, 'wb')
+            Length = response.getheader('content-length')
+            BlockSize = 1000000  # default value            
+            if Length:
+                Length = int(Length)
+                BlockSize = max(4096, Length // 20)
+
+            print("UrlLib len, blocksize: ", Length, BlockSize)
+
+            BufferAll = io.BytesIO()
+            Size = 0
+            while True:
+                BufferNow = Response.read(BlockSize)
+                if not BufferNow:
+                    break
+                BufferAll.write(BufferNow)
+                Size += len(BufferNow)
+                if Length:
+                    Percent = int((Size / Length)*100)
+                    print(f"download: {Percent}% {example}")
+
+            out_file.write(BufferAll.getbuffer())
+            print("Buffer All len:", len(BufferAll.getvalue()))
+
+            #with urllib2.urlopen(example) as response, open(zip_path, 'wb') as out_file:
+            ##shutil.copyfileobj(response, out_file)
 
     with zipfile.ZipFile(zip_path) as zf:
 
