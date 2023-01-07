@@ -206,7 +206,7 @@ function html_ranking(config){
 
                 }else{
                     const parameter_options = config.methodMetrics[parameter_name];
-                    if(parameter_options.table_group_name != "" ){
+                    if(parameter_options.table_group_name != undefined && parameter_options.table_group_name != "" ){
                         arr_group_name[parameter_name] = parameter_options.table_group_name;
                     }
                 }
