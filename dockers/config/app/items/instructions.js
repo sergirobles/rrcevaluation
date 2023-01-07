@@ -69,7 +69,7 @@ $(function() {
         processInterval = setInterval(function(){
 
             $.get("/progress",function(data){
-                $("#div_msg_example").html(spinner() + alert_info(data.msg));
+                $("#div_msg_example").html(alert_info(spinner() + data.msg));
             },"json");
 
         },1000);
