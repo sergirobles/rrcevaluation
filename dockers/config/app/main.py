@@ -10,6 +10,7 @@ import shutil
 import urllib.request as urllib2
 import http.cookiejar as cookielib
 import re
+import io
 from jinja2 import Environment, FileSystemLoader
 sys.path.append("/code/scripts/")
 
@@ -17,8 +18,6 @@ from fastapi import FastAPI, UploadFile, Request, status, Form
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, Response
-
-from pydantic import BaseModel
 
 app1 = FastAPI()
 
@@ -32,10 +31,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"result":False,"msg":"Error with parameters","errors":exc.errors()}),
     )
-
-class Item(BaseModel):
-    id: str
-    value: str
 
 @app1.get( "/gtFile/{item_id}" )
 async def read_sample(item_id: str):
@@ -80,6 +75,16 @@ async def read_sample(item_id: str):
         media_type = "application/xml"             
 
     return Response(content=data, media_type=media_type)       
+
+@app1.get( "/progress" )
+def get_progress():
+    return FileResponse("/var/tmp/progress.json", media_type="application/json")  
+
+def save_progress(msg:str):
+    fd = open('/var/tmp/progress.json', "w")
+    fd.write(json.dumps({"msg":msg}, indent=4))
+    fd.close()
+
 
 @app1.get( "/samples/{item_id}" )
 async def read_sample(item_id: str):
@@ -408,6 +413,9 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
     zip_path = example_path + "/" + str(uuid.uuid4()) + ".zip"
 
     if exampleFile != None :
+
+        save_progress( "Please wait, uplading example.." );
+
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
         zip_path = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4())) 
@@ -418,34 +426,38 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
         fd.close()
 
     else:
+
+        save_progress( "Please wait, downloading example.." );
+
         with urllib2.urlopen(example) as response:
             out_file = open(zip_path, 'wb')
-            Length = response.getheader('content-length')
-            BlockSize = 1000000  # default value            
-            if Length:
-                Length = int(Length)
-                BlockSize = max(4096, Length // 20)
+            length = response.getheader('content-length')
+            blockSize = 1000000  # default value            
+            if length:
+                length = int(length)
+                blockSize = max(4096, length // 20)
 
-            print("UrlLib len, blocksize: ", Length, BlockSize)
+            print("UrlLib len, blocksize: ", length, blockSize)
 
-            BufferAll = io.BytesIO()
-            Size = 0
+            bufferAll = io.BytesIO()
+            size = 0
             while True:
-                BufferNow = Response.read(BlockSize)
-                if not BufferNow:
+                bufferNow = response.read(blockSize)
+                if not bufferNow:
                     break
-                BufferAll.write(BufferNow)
-                Size += len(BufferNow)
-                if Length:
-                    Percent = int((Size / Length)*100)
-                    print(f"download: {Percent}% {example}")
+                bufferAll.write(bufferNow)
+                size += len(bufferNow)
+                if length:
+                    percent = int((size / length)*100)
+                    save_progress( "Please wait, downloading example: %s %%" % percent);
 
-            out_file.write(BufferAll.getbuffer())
-            print("Buffer All len:", len(BufferAll.getvalue()))
+            out_file.write(bufferAll.getbuffer())
+            print("Buffer All len:", len(bufferAll.getvalue()))
 
             #with urllib2.urlopen(example) as response, open(zip_path, 'wb') as out_file:
             ##shutil.copyfileobj(response, out_file)
 
+    save_progress( "Extracting contents");
     with zipfile.ZipFile(zip_path) as zf:
 
         zf.extractall(example_path)
@@ -515,6 +527,7 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
    
 
         #Install PIP requirements
+        save_progress( "Installing requirements");
         try:
             urllib2.urlopen("http://host.docker.internal:9020/install")
         except Exception as e:    

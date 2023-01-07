@@ -32,18 +32,21 @@ $(function() {
                     return;
                 }
                 $("#btnImport").prop("disabled",true);
-                $("#div_msg_example").html(`<div class='alert alert-info'>
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>Please wait, downloading example..</div>`);
+
+                $("#div_msg_example").html( alert_info( spinner() + "Please wait, downloading example.."));
+
+                startProgress();
 
                 var url = Object.keys(examples)[$("#ul_examples li.active").index()];
 
                 $("#modal_import").modal("hide");
         
                 $.post("./load_example", {"example": url  },function(data){
+
+                    stopProgress();
                 
                     if(data.result){
+                        
                         
         
                         $("#div_msg_example").html("<div class='alert alert-success'>Example loaded</div>");
@@ -61,7 +64,20 @@ $(function() {
         });
     });
 
+    var processInterval = null;
+    function startProgress(){
+        processInterval = setInterval(function(){
 
+            $.get("/progress",function(data){
+                $("#div_msg_example").html(spinner() + alert_info(data.msg));
+            },"json");
+
+        },1000);
+    }
+
+    function stopProgress(){
+        clearInterval(processInterval);
+    }
 
 
 
@@ -73,10 +89,10 @@ $(function() {
         }
 
         $("#btnImportFile").prop("disabled",true);
-        $("#div_msg_example").html(`<div class='alert alert-info'>
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>Please wait, loading example..</div>`);
+
+        $("#div_msg_example").html( alert_info( spinner() + "Please wait, uplading example.."));
+
+        startProgress();
 
         const request = new XMLHttpRequest();
         request.open("POST", "http://localhost:9010/load_example");
@@ -85,6 +101,8 @@ $(function() {
         const formElement = document.querySelector("#form_example_local");        
 
         request.onload = (progress) => {
+
+            stopProgress();
 
             if( request.status === 200 ){
 
@@ -104,6 +122,7 @@ $(function() {
             }
           };
         request.onerror = () => {
+            stopProgress();
             $("#div_msg_example").html(`<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`);   
             $("#btnImportFile").prop("disabled",false);
         }
@@ -111,6 +130,7 @@ $(function() {
         try{
             request.send(new FormData(formElement));
         }catch(err){
+            stopProgress();
             $("#div_msg_example").html(`<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`);   
             $("#btnImportFile").prop("disabled",false);
         }
