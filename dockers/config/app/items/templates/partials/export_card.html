@@ -1,0 +1,39 @@
+<ul>
+    {% if validations.gtExists %}
+      <li><i class="bi bi-check-circle-fill text-success"></i> Ground truth</li>
+    {% else %}  
+      <li><i class="bi bi-x-circle-fill text-danger"></i> Ground truth</li>
+    {% endif %}      
+    {% if validations.scriptExists %}          
+      <li><i class="bi bi-check-circle-fill text-success"></i> Python scripts (v.3.9) or your custom docker</li>
+    {% else %}  
+      <li><i class="bi bi-x-circle-fill text-warning"></i> Python scripts (v.3.9) or your custom docker</li>
+    {% endif %}
+    {% if validations.samplesExists %}          
+      <li><i class="bi bi-check-circle-fill text-success"></i> Samples (optional)</li>
+    {% else %}  
+      <li><i class="bi bi-x-circle-fill text-warning"></i> Samples (optional)</li>
+    {% endif %}
+    {% if configValid %}
+      <li><i class="bi bi-check-circle-fill text-success"></i> Configuration file</li>
+    {% else %}  
+      <li><i class="bi bi-x-circle-fill text-danger"></i> Configuration file (not valid)</li>
+    {% endif %}
+    {% if validations.methodSampleExists %}
+      <li><i class="bi bi-check-circle-fill text-success"></i> Submition sample (the last evaluated method)</li>
+    {% else %}  
+      <li><i class="bi bi-x-circle-fill text-danger"></i> Submition sample (the last evaluated method)</li>
+    {% endif %}
+    {% if validations.resultsExists %}
+      <li><i class="bi bi-check-circle-fill text-success"></i> Evaluation results</li>
+    {% else %}  
+      <li><i class="bi bi-x-circle-fill text-danger"></i> Evaluation results</li>
+    {% endif %}
+  </ul>
+  <div id="div_msg_export"></div>
+  {% if configValid and validations.methodSampleExists and validations.resultsExists %}
+    <a href='/export' class="card-link btn btn-success" id="btnExport">Export zip</a>
+  {% else %}
+    <button disabled class="card-link btn btn-success" id="btnExport">Export zip</button>
+  {% endif %}
+  <p class="mt-3">If you have customized the evaluation docker, you will have to manually export it.</p>

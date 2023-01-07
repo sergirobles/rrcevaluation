@@ -1,6 +1,35 @@
 $(function() {
 
+    $("#btnClear").click(function(){
+        var html = alert_error("Are you sure to remove all files on the mounted folders and clear configuration?");
+        var html_footer = `<button type="button" class="card-link btn btn-danger" id="btnClear">Clear</button>`
 
+        show_html_modal("Clear items and config",html,html_footer,"modal_clear",false,function(){
+            $("#modal_clear #btnClear").click(function(){
+
+                $("#modal_clear").modal("hide");
+                
+                $("#div_msg_example").html( alert_info( spinner() + "Please wait, removing files."));
+
+                $.post("./clear", {},function(data){
+
+                    
+
+                    if(data.result){
+
+                        $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Done'));
+                        update_export_card();
+        
+                    }else{
+                        $("#div_msg_example").html( alert_danger(data.msg));
+        
+                    }
+            
+                },"json");
+            });
+        });
+
+    });
 
     $("#btnImportRRC").click(function(){
 
@@ -33,7 +62,7 @@ $(function() {
                 }
                 $("#btnImport").prop("disabled",true);
 
-                $("#div_msg_example").html( alert_info( spinner() + "Please wait, downloading example.."));
+                $("#div_msg_example").html( alert_info( spinner() + "Please wait, <span class='msg'>downloading example..</span>"));
 
                 startProgress();
 
@@ -47,13 +76,11 @@ $(function() {
                 
                     if(data.result){
                         
-                        
-        
-                        $("#div_msg_example").html("<div class='alert alert-success'>Example loaded</div>");
+                        $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Example loaded'));
+                        update_export_card();
         
                     }else{
-                        
-                        $("#div_msg_example").html("<div class='alert alert-danger'>" + data.msg + "</div>");
+                        $("#div_msg_example").html( alert_danger(data.msg));
         
                     }
             
@@ -69,7 +96,7 @@ $(function() {
         processInterval = setInterval(function(){
 
             $.get("/progress",function(data){
-                $("#div_msg_example").html(alert_info(spinner() + data.msg));
+                $("#div_msg_example span.msg").html(data.msg);
             },"json");
 
         },1000);
@@ -77,6 +104,12 @@ $(function() {
 
     function stopProgress(){
         clearInterval(processInterval);
+    }
+
+    function update_export_card(){
+        $.get("/export_card",function(data){
+            $("#div_export_card").html(data);
+        });
     }
 
 
@@ -110,9 +143,10 @@ $(function() {
 
                 var jsonResponse = request.response;
                 if (jsonResponse.result){
-                    $("#div_msg_example").html("<div class='alert alert-success'>Example loaded</div>");
+                    $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Example loaded'));
+                    update_export_card();
                 }else{
-                    $("#div_msg_example").html("<div class='alert alert-danger'>" + jsonResponse.msg + "</div>");                    
+                    $("#div_msg_example").html( alert_danger(jsonResponse.msg));
                     
                 }
 

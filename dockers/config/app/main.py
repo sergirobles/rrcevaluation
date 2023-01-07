@@ -177,14 +177,54 @@ async def read_item(item_id: str):
     return FileResponse(path , media_type=media_type)
 
 @app1.get('/', response_class=HTMLResponse)
-async def index():
-    template = env.get_template("index.html")
-    return template.render(page="instructions",config=config())
-
 @app1.get('/index.html', response_class=HTMLResponse)
 async def index():
     template = env.get_template("index.html")
-    return template.render(page="instructions",config=config())
+    configDict = config()
+
+    configValidDict = await validate_config()
+
+    return template.render(page="instructions",config=configDict,validations=validations(),configValid=configValidDict["result"])
+
+@app1.get('/export_card', response_class=HTMLResponse)
+async def export_card():
+    template = env.get_template("partials/export_card.html")
+    configDict = config()
+
+    configValidDict = await validate_config()
+
+    return template.render(config=configDict,validations=validations(),configValid=configValidDict["result"])
+
+
+def validations():
+    configDict = config()    
+    if not 'res_ext' in configDict:
+        methodSampleExists = False
+    else:
+        methodSamplePath = '/var/www/submits/method.%s' % configDict["res_ext"]
+        methodSampleExists = os.path.exists(methodSamplePath) == True and os.path.isfile(methodSamplePath) == True
+
+    if not 'gt_path' in configDict:
+        gtExists = False
+    else:
+        gtPath = '/var/www/gt/%s' % configDict["gt_path"]
+        gtExists = os.path.exists(gtPath) == True and os.path.isfile(gtPath) == True
+
+
+    resultsPath = '/var/www/submits/results.zip'
+    resultsExists = os.path.exists(resultsPath) == True and os.path.isfile(resultsPath) == True
+
+    if not 'samples_path' in configDict:
+        samplesExists = False
+    else:
+        samplesPath = '/var/www/gt/%s' % configDict["samples_path"]
+        samplesExists = os.path.exists(samplesPath) == True and os.path.isfile(samplesPath) == True
+    
+    scriptPath = '/code/scripts/%s.py' % (configDict["script"] if 'script' in configDict and configDict["script"] !="" else "script")
+    scriptExists = os.path.exists(scriptPath) == True and os.path.isfile(scriptPath) == True
+
+    return {methodSampleExists: methodSampleExists,gtExists:gtExists,scriptExists:scriptExists,samplesExists:samplesExists,resultsExists:resultsExists}
+
 
 @app1.get('/results.html', response_class=HTMLResponse)
 async def index():
@@ -215,7 +255,7 @@ def config():
     return contents
 
 @app1.get( "/methodResults/{item_id}" )
-def read_method_result(item_id: str):
+async def read_method_result(item_id: str):
     file = '/var/www/submits/results.zip'
     if os.path.isfile(file) == False:
         return JSONResponse(status_code=404, content={"message": "Item not found"})   
@@ -240,11 +280,11 @@ def read_method_result(item_id: str):
     return Response(content=data, media_type=media_type)    
 
 @app1.get("/methodResults")
-def methodResults():
-    return read_method_result('method.json')
+async def methodResults():
+    return await read_method_result('method.json')
 
 @app1.get("/samplesList")
-def samplesList():
+async def samplesList():
     contents = []
     try :
 
@@ -280,7 +320,7 @@ def samplesList():
 error_msg = ""
 
 @app1.get("/validate_config")
-def validate_config():
+async def validate_config():
     try :
 
         configDict = config()
@@ -353,7 +393,7 @@ def validate_config():
         return {"result":False,"msg": e if isinstance(e, str) else e['msg'] }
 
 @app1.post("/save_config")
-def save_config( config: Optional[str] = Form("")):
+async def save_config( config: Optional[str] = Form("")):
 
     #try :
     jsonVar = json.loads(config)
@@ -379,7 +419,7 @@ def save_config( config: Optional[str] = Form("")):
 
 
 @app1.post("/download_results")
-def download_results( url: Optional[str] = Form("")):
+async def download_results( url: Optional[str] = Form("")):
     results_path = '/var/www/submits/results.zip'
 
     try :
@@ -403,9 +443,42 @@ def validate_method_metric_params(params):
     #TODO: validate params
     return True
 
+
+
+@app1.post("/clear")
+async def load_example( ):
+
+    delete_files()
+    return {"result":True}
+
+
+def delete_files():
+    for file_name in os.listdir('/code/scripts'):
+        # construct full file path
+        file = '/code/scripts/' + file_name
+        if os.path.isfile(file):
+            print('Deleting file:', file)
+            os.remove(file)
+        elif os.path.isdir(file):
+            shutil.rmtree('/code/scripts/%s' % file_name)
+
+    for file_name in os.listdir('/var/www/submits/'):
+        # construct full file path
+        file = '/var/www/submits/' + file_name
+        if os.path.isfile(file):
+            print('Deleting file:', file)
+            os.remove(file)            
+
+    for file_name in os.listdir('/var/www/gt/'):
+        # construct full file path
+        file = '/var/www/gt/' + file_name
+        if os.path.isfile(file):
+            print('Deleting file:', file)
+            os.remove(file)            
+
    
 @app1.post("/load_example")
-def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFile, None] = None ):
+async def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFile, None] = None ):
 
     example_path = UPLOAD_FOLDER + str(uuid.uuid4())
     os.mkdir(example_path)
@@ -414,7 +487,7 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
 
     if exampleFile != None :
 
-        save_progress( "Please wait, uplading example.." );
+        save_progress( "uploading example.." );
 
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
@@ -427,7 +500,7 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
 
     else:
 
-        save_progress( "Please wait, downloading example.." );
+        save_progress( "downloading example.." );
 
         with urllib2.urlopen(example) as response:
             out_file = open(zip_path, 'wb')
@@ -449,7 +522,7 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
                 size += len(bufferNow)
                 if length:
                     percent = int((size / length)*100)
-                    save_progress( "Please wait, downloading example: %s %%" % percent);
+                    save_progress( "downloading example: %s %%" % percent);
 
             out_file.write(bufferAll.getbuffer())
             print("Buffer All len:", len(bufferAll.getvalue()))
@@ -468,29 +541,8 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
         if os.path.exists(config_path) == False or os.path.isfile(config_path) == False :
             return {"result":False,"msg":"Config file folder not found %s" % config_path}
 
-        
-        for file_name in os.listdir('/code/scripts'):
-            # construct full file path
-            file = '/code/scripts/' + file_name
-            if os.path.isfile(file):
-                print('Deleting file:', file)
-                os.remove(file)
-            elif os.path.isdir(file):
-                shutil.rmtree('/code/scripts/%s' % file_name)
-
-        for file_name in os.listdir('/var/www/submits/'):
-            # construct full file path
-            file = '/var/www/submits/' + file_name
-            if os.path.isfile(file):
-                print('Deleting file:', file)
-                os.remove(file)            
-
-        for file_name in os.listdir('/var/www/gt/'):
-            # construct full file path
-            file = '/var/www/gt/' + file_name
-            if os.path.isfile(file):
-                print('Deleting file:', file)
-                os.remove(file)                                 
+        delete_files()
+      
 
         shutil.copyfile(config_path, '/var/www/gt/config.json')
 
@@ -527,7 +579,7 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
    
 
         #Install PIP requirements
-        save_progress( "Installing requirements");
+        save_progress( "Installing requirements")
         try:
             urllib2.urlopen("http://host.docker.internal:9020/install")
         except Exception as e:    
@@ -537,7 +589,7 @@ def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFil
 
 
 @app1.get("/export")
-def export():
+async def export():
 
     try :
 
