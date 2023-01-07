@@ -18,4 +18,6 @@ COPY ./app /code/
 
 COPY ./init.sh /code/init.sh
 
+RUN chmod +x /code/init.sh
+
 ENTRYPOINT ["/code/init.sh"]
