@@ -1,11 +1,7 @@
-
 $(function() {
 
 
 
-
-    html_modal_content
-    
     $("#btnImportRRC").click(function(){
 
         var html = "<ul id='ul_examples' class='list-group'></ul>";
@@ -120,5 +116,7 @@ $(function() {
         }
     
     });
+
+
 
 })
