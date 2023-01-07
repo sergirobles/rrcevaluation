@@ -184,7 +184,7 @@ async def index():
 
     configValidDict = await validate_config()
 
-    return template.render(page="instructions",config=configDict,validations=validations(),configValid=configValidDict["result"])
+    return template.render(page="instructions",config=configDict,validations=get_validations(configDict),configValid=configValidDict["result"])
 
 @app1.get('/export_card', response_class=HTMLResponse)
 async def export_card():
@@ -193,11 +193,11 @@ async def export_card():
 
     configValidDict = await validate_config()
 
-    return template.render(config=configDict,validations=validations(),configValid=configValidDict["result"])
+    return template.render(config=configDict,validations=get_validations(configDict),configValid=configValidDict["result"])
 
 
-def validations():
-    configDict = config()    
+def get_validations(configDict):
+
     if not 'res_ext' in configDict:
         methodSampleExists = False
     else:
@@ -223,7 +223,13 @@ def validations():
     scriptPath = '/code/scripts/%s.py' % (configDict["script"] if 'script' in configDict and configDict["script"] !="" else "script")
     scriptExists = os.path.exists(scriptPath) == True and os.path.isfile(scriptPath) == True
 
-    return {methodSampleExists: methodSampleExists,gtExists:gtExists,scriptExists:scriptExists,samplesExists:samplesExists,resultsExists:resultsExists}
+    return {
+        'methodSampleExists': methodSampleExists,
+        'gtExists':gtExists,
+        'scriptExists':scriptExists,
+        'samplesExists':samplesExists,
+        'resultsExists':resultsExists
+        }
 
 
 @app1.get('/results.html', response_class=HTMLResponse)

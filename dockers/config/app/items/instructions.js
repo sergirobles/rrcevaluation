@@ -108,7 +108,7 @@ $(function() {
 
     function update_export_card(){
         $.get("/export_card",function(data){
-            $("#div_export_card").html(data);
+            $("#div_export_card_body").html(data);
         });
     }
 
