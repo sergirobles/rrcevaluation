@@ -344,7 +344,9 @@ var ClassVisualization = function(){
     this.getSamplesFile = function(file){
         return "/samples/" + file;
     }    
-    
+    this.getSamplesImageNum = function(sampleNum){
+        return "/samples/" + samples.data[sampleNum-1].images[0];
+    }     
 };
 
 ClassVisualization.prototype.load_visualization = function(){

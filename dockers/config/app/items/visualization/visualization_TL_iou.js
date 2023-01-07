@@ -7,8 +7,7 @@ ClassVisualization.prototype.load_visualization = function(){
 
     var sampleData = this.sampleData;
 
-    var urlImg = "/samples/" + samples.data[visualization.sampleNum-1].images[0];
-    console.log(urlImg);
+    var urlImg = this.getSamplesImageNum(this.sampleNum);    
 
     var template = "<div class='im_filters'><input type='checkbox' checked='checked' id='chk_image'><label for='chk_image'>Show Image</label></div>"+
                     "<div class='container_canvas'>" +
