@@ -1,4 +1,4 @@
-# Craeting a Task for a RRC Competition
+# Creating a Task for a RRC Competition
 
 To create a task for a competition held on the RRC site you have to:
 - Provide the Ground Truth
