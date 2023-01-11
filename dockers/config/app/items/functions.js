@@ -25,16 +25,6 @@ $(function() {
         new bootstrap.Tooltip($(this)[0], [])
     });
 
-    $("#sampleResults").change(function(){
-      if($("#sampleResults").prop("checked")){
-          $("#div_config_samples").removeClass("d-none");
-        }else{
-          $("#div_config_samples").addClass("d-none");
-        }
-    });
-
-
-    
 
       $(document).on("change","select.userParameter",function(){
         

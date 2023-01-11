@@ -22,6 +22,32 @@ $(function() {
   
       });   
 
+      $("#sampleResults").change(function(){
+        if($("#sampleResults").prop("checked")){
+            $("#div_config_samples").removeClass("d-none");
+          }else{
+            $("#div_config_samples").addClass("d-none");
+          }
+      });
+
+      $("#switchDocker").change(function(){
+        if($("#switchDocker").prop("checked")){
+            $("#div_docker").removeClass("d-none");
+            $("#div_no_docker").addClass("d-none");
+        }else{
+            $("#div_docker").addClass("d-none");
+            $("#div_no_docker").removeClass("d-none");
+        }
+      });
+      $("#switchExtra").change(function(){
+        if($("#switchExtra").prop("checked")){
+            $("#div_extra").removeClass("d-none");
+        }else{
+            $("#div_extra").addClass("d-none");
+        }
+      });
+
+
       $("#selectSamplesListType").change(function(){
           if($("#selectSamplesListType").val() == "regexp" ){
               $("#divSamplesRegexp").removeClass("d-none");
@@ -70,6 +96,24 @@ $(function() {
             }else{
                 $("#div_samples").addClass("d-none");
             }
+
+            $("#switchDocker").prop("checked", data.docker);
+            if(data.docker){
+                $("#div_docker").removeClass("d-none");
+                $("#div_no_docker").addClass("d-none");
+            }else{
+                $("#div_docker").addClass("d-none");
+                $("#div_no_docker").removeClass("d-none");
+            }
+
+            
+            $("#switchExtra").prop("checked", data.userParameters !={} ||  data.methodParameters !={} );
+            if(data.userParameters !={} ||  data.methodParameters !={}){
+                $("#div_extra").removeClass("d-none");
+            }else{
+                $("#div_extra").addClass("d-none");
+            }
+
 
             $("#selectResultsExt").val(data.res_ext);
 
