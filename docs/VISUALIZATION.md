@@ -4,19 +4,73 @@ A visualization for the samples results. (default,TL_iou,Segm,E2E,E2E_video) Eac
 ## Default Visualization (default)
 This visualization shows the image(/s) for the current sample and lists all the properties present on the JSON file of the sample results.
 
-## Text Line Intersection Over Union (TL_iou)
+## Text Line - Intersection Over Union (TL_iou)
 This visualization shows:
-    2 blocks of the current image sample, the first one with the Ground Truth Polygons and the other with the detection ones.
-    Intersection Over Union Matrix, with intersection results between all GT vs. Det pairs.
-    Evaluation log
+-  2 blocks of the current image sample, the first one with the Ground Truth Polygons and the other with the detection ones.
+-  Intersection Over Union Matrix, with intersection results between all GT vs. Det pairs.
+-  Evaluation log
 
 For this visualization, you have to include on JSON file of the sample results the variables:
 
 | Parameter | Type | Description |
 | --- | --- | --- |
 | gtPolPoints | array | GT bounding boxes. Each Bounding box has an array of point \[x1,y1,x2,y2, .. , xn,yn\] |
-| detPolPoints | array | Det bounding boxes. Each Bounding box has an array of point [x1,y1,x2,y2, .. , xn,yn]
-| gtDontCare  | array | Indexes of the GT bounding boxes defined as Don't care
-| iouMatrix |  array |  Intersection values between GT an Detection BBs. \[GT\]/\[DET\] = Intersection value
-| evaluationLog  | String | Log of important parts of the evaluation process
+| detPolPoints | array | Det bounding boxes. Each Bounding box has an array of point [x1,y1,x2,y2, .. , xn,yn] |
+| gtDontCare  | array | Indexes of the GT bounding boxes defined as Don't care |
+| iouMatrix |  array |  Intersection values between GT an Detection BBs. \[GT index\]\[DET index\] = Intersection value (0 to 1) |
+| evaluationLog  | String | Log of important parts of the evaluation process |
 
+
+## Segmentation (Segm)
+This visualization shows:
+-  2 blocks of the current image sample, the first for showing Ground Truth Info and the other for the Detection info.
+-  Evaluation log
+
+For this visualization, you have to include on JSON file of the sample results the variables:
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| evaluationLog  | String | Log of important parts of the evaluation process |
+
+
+The samples ZIP must have for each sample:
+| Name | Description |
+| --- | --- |
+| img_\[sampleNum\].jpg  | The image |
+
+
+The Ground Truth must include the files:
+| gt_color_\[sampleNum\].png  | The image with the text pixels colored. Each color represents a text part  |
+| gt_bw_\[sampleNum\].png  | The BW image with the text pixels in white |
+
+
+On the submited method ZIP file, must include the files:
+| res_img_\[sampleNum\].png  | The image with the pixel colors detected  |
+
+On the results ZIP file, you have to include extra items for each sample:
+| Name | Description |
+| --- | --- |
+| px_img\[sampleNum\].png  | The image |
+| res_atoms_det_\[sampleNum\].png  | The image |
+| res_atoms_gt_\[sampleNum\].png  | The image |
+
+
+
+## End to End (E2E)
+This visualization shows:
+-  2 blocks of the current image sample, the first one with the Ground Truth Polygons and the other with the detection ones.
+-  Intersection Over Union Matrix, with intersection results between all GT vs. Det pairs.
+-  Evaluation log
+
+For this visualization, you have to include on JSON file of the sample results the variables:
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| gtPolPoints | array | GT bounding boxes. Each Bounding box has an array of point \[x1,y1,x2,y2, .. , xn,yn\] |
+| detPolPoints | array | Det bounding boxes. Each Bounding box has an array of point [x1,y1,x2,y2, .. , xn,yn] |
+| gtDontCare  | array | Indexes of the GT bounding boxes defined as Don't care |
+| iouMatrix |  array |  Intersection values between GT an Detection BBs. \[GT index\]\[DET index\] = Intersection value (0 to 1) |
+| evaluationLog  | String | Log of important parts of the evaluation process |
+
+
+## End to End for Video (E2E_video)
