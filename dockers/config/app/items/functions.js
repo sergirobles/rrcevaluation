@@ -128,7 +128,7 @@ $(function() {
                                 if(data.result){
                                     output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated & Sample Results Downloaded</div>`   
                                 }else{
-                                    output.innerHTML = `<div class='alert alert-danger'>Error downloading the results file. <br><strong>${jsonResponse.msg}</strong></div>`   
+                                    output.innerHTML = `<div class='alert alert-danger'>Error downloading the results file. <br><strong>${data.msg}</strong></div>`   
                                     $("#form_evaluate input[type='submit']").prop("disabled",false);
                                 }
                             },"json");
