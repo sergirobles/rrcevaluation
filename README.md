@@ -3,10 +3,10 @@
 To hold a competition on the RRC site you have to:
 - Implement a Python evaluation script or provide a Docker implementing a REST service
 - Provide the Ground Truth
-- Provide a task configuration file
+- Provide a [task configuration file](docs/CONFIGURATION.md)
 - If you want to show samples information:
     - Provide samples Zip
-    - Enter details on the configuration file
+    - Enter details on the configuration file, as the [visualization](docs/VISUALIZATION.md)
 
 In this project we have included an utility to create the configuration file, test the calls to you evaluation and see the results as it will appear on the RRC site.
 
@@ -30,7 +30,7 @@ The simplest way to create your evaluation is to create a Python evaluation scri
 
 [Evaluation script info](docs/EVALUATIONSCRIPT.md)
 
-If your evaluation is not in Python, you have to provide a Docker implementing a REST fucntion.
+If your evaluation is not in Python, you have to provide a Docker implementing a REST functions.
 
 [Evaluation docker info](docs/EVALUATIONDOCKER.md)
 
