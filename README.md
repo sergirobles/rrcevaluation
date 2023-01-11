@@ -1,6 +1,6 @@
 # Craeting a Task for a RRC Competition
 
-To create a task for a competition holded on the RRC site you have to:
+To create a task for a competition held on the RRC site you have to:
 - Provide the Ground Truth
 - Implement a [Python evaluation script](docs/EVALUATIONSCRIPT.md) (the simplest way) or provide a [Docker](docs/EVALUATIONDOCKER.md) implementing a REST service
 - Provide a [task configuration file](docs/CONFIGURATION.md)
