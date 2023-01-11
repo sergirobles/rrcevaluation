@@ -64,21 +64,19 @@ async def index():
 
 
 @app1.post("/validate")
-def validate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] = None, results:Optional[str]= Form(""), methodParams: Optional[str] = Form("")):
+def validate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] = None, results:Optional[str]= Form(""), methodParams: Optional[str] = Form(""), evaluationScript: Optional[str] = Form(""),resultsExtension: Optional[str] = Form("")):
 
     try:
-        configDict = config()
-
         gt_path = gt
         if os.path.isfile(gt) == False:
             return {"result":False,"msg":"Ground Truth path not valid or not accesible (ground truth path must start with /var/www/gt)"}
 
         #Validate the results params and get the results path
-        results_path = validate_results_file(resultsFile, results, [configDict['res_ext']])
+        results_path = validate_results_file(resultsFile, results, [resultsExtension])
 
         #Loading the script module
         
-        script_name = configDict['script'] if 'script' in configDict and len(configDict['script'])>0  else 'script'
+        script_name = evaluationScript if len(evaluationScript)>0  else 'script'
 
         module = importlib.import_module("scripts.{0}".format(script_name))
 
@@ -101,24 +99,22 @@ def validate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
     
 
 @app1.post("/evaluate")
-def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] = None,  results:Optional[str]= Form(""), methodParams: Optional[str] = Form("")):
+def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] = None,  results:Optional[str]= Form(""), methodParams: Optional[str] = Form(""), evaluationScript: Optional[str] = Form(""),calculateSamplesInfo:int = Form(...), resultsExtension: Optional[str] = Form("")):
     
     try:
-
-        configDict = config()
 
         gt_path = gt
         if os.path.isfile(gt) == False:
             return {"result":False,"msg":"Ground Truth path not valid or not accesible (ground truth path must start with /var/www/gt)"}
 
         #Validate the results params and get the results path
-        results_path = validate_results_file(resultsFile, results, [configDict['res_ext']])
+        results_path = validate_results_file(resultsFile, results, [resultsExtension])
 
         resDict = {'result':True,'method':{}}
 
         #Loading the script module
 
-        script_name = configDict['script'] if 'script' in configDict and len(configDict['script'])>0  else 'script'
+        script_name = evaluationScript if len(evaluationScript)>0  else 'script'
 
         module = importlib.import_module("scripts.{0}".format(script_name))
 
@@ -167,7 +163,7 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
         #Add samples results
         outZip.writestr('method.json',json.dumps(resDict))
 
-        if configDict['samples']==True:
+        if calculateSamplesInfo==1:
 
             #Add samples results
             if 'per_sample' in evalData.keys():
@@ -186,19 +182,6 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
     except Exception as e:
         return {"result":False,"msg":"{0}".format(e)}
 
-
-@app1.get("/config")
-def config():
-    contents = {}
-    try :
-        with open('/var/www/gt/config.json', encoding='utf8') as f:
-            contents = json.loads(f.read())
-            f.close()
-    except Exception as e:   
-        print(e) 
-        contents = {}
-
-    return contents
 
 def validate_results_file(resultsFile,results,validExtensions):
 
