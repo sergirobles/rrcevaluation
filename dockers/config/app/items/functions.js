@@ -188,7 +188,7 @@ function alert_success(msg,compact){
     return '<div class="alert alert-success' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
 }
 function alert_error(msg,compact){
-    return '<div class="alert alert-error' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
+    return '<div class="alert alert-danger' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
 }
 function alert_info(msg,compact){
     return '<div class="alert alert-info' + (compact!= undefined && compact? " p-2" : "") + '">' + msg + '</div>';
