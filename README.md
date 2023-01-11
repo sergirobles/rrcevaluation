@@ -8,7 +8,7 @@ To create a task for a competition held on the RRC site you have to:
     - Provide samples Zip
     - Enter details on the configuration file, such as the type of [visualization](docs/VISUALIZATION.md) to be used
 
-In this project we have included an utility to create the configuration file, test your evaluation and see the results as it will appear on the RRC site.
+In this project we have included a utility to create the configuration file, test your evaluation and see the results as they would appear on the RRC site.
 
 ## Set-up
 [Install Docker](https://docs.docker.com/get-docker/) (and Docker-Compose)
