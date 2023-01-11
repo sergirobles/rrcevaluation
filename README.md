@@ -1,7 +1,7 @@
-# HOSTING COMPETITION ON RRC
+# Craeting a Task for a RRC Competition
 
-To hold a competition on the RRC site you have to:
-- Implement a Python evaluation script or provide a Docker implementing a REST service
+To create a task for a competition holded on the RRC site you have to:
+- Implement a [Python evaluation script](docs/EVALUATIONSCRIPT.md) (the simplest way) or provide a [Docker](docs/EVALUATIONDOCKER.md) implementing a REST service
 - Provide the Ground Truth
 - Provide a [task configuration file](docs/CONFIGURATION.md)
 - If you want to show samples information:
@@ -19,18 +19,9 @@ docker-compose up
 ```
 
 Acess to the utility
-```
-http://localhost:9010
-```
+[http://localhost:9010]
 
 
-## Evaluation
-
-The simplest way to create your evaluation is to create a Python evaluation script implementing 2 methods (validate_data and evaluate_method).
-
-[Evaluation script info](docs/EVALUATIONSCRIPT.md)
-
-If your evaluation is not in Python, you have to provide a Docker implementing a REST functions.
-
-[Evaluation docker info](docs/EVALUATIONDOCKER.md)
-
+## Packing files
+When you have all your scripts and configuration ready, use the Export button on the utility to create a ZIP with all the files needed.
+I you have customized or implemented a new docker, send als to the RRC another file with the docker folder.
