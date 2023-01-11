@@ -16,7 +16,8 @@ INPUT:
 | results | String | Internal path with the results file. (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder) |
 | resultsFile | File | File with the results |
 | methodParams | String/optional | Method params in JSON |
-
+| evaluationScript | String/optional | The name of the primary evaluation script used for the evaluation |
+| resultsExtension | String | The extension requested for the file with results |
 
 OUTPUT:
 A JSON string with the following Dict:
@@ -40,6 +41,9 @@ INPUT:
 | results | String | Internal path with the results file. (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder) |
 | resultsFile | File | File with the results |
 | methodParams | String/optional | Method params in JSON |
+| evaluationScript | String/optional | The name of the primary evaluation script used for the evaluation |
+| resultsExtension | String | The extension requested for the file with results |
+| calculateSamplesInfo | int | Indicates if the evaluation has to generate per sample information (1:yes) |
 
 OUTPUT:
 A JSON string with the following Dict:
@@ -51,3 +55,10 @@ A JSON string with the following Dict:
 | samplesUrl | String * | URL to download the results ZIP file with samples information. *Required if you want to show samples information. |
 
 
+OUTPUT (ZIP file):
+Your evaluation method must generate a ZIP file with the results. The contents of the ZIP file are:
+| Filename | Type | Description |
+| --- | --- | --- |
+| method.json | Required | JSON dictionary with the method results. At least all keys defined in the configuration must be present here. |
+| \[SAMPLE_ID\].json | Optional  | JSON dictionary with the sample results. At least all keys defined in the configuration must be present here. * Required if the configuration **samples** option is enabled. |
+| *.* | Optional | The ZIP can include other files that you need for the visualization. |
