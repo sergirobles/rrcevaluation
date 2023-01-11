@@ -16,9 +16,8 @@
 
               <ul class="list-group mb-3">
       
-                <li class="list-group-item active" aria-current="true" data-bs-toggle="tab" data-bs-target="#instructions_p39">Python 3.9</li>
-                <li class="list-group-item" data-bs-toggle="tab" data-bs-target="#instructions_p">Other Python version</li>
-                <li class="list-group-item" data-bs-toggle="tab" data-bs-target="#instructions_o">Other Languages</li>
+                <li class="list-group-item active" aria-current="true" data-bs-toggle="tab" data-bs-target="#instructions_p39">Python Evaluation script</li>
+                <li class="list-group-item" data-bs-toggle="tab" data-bs-target="#instructions_o">Custom docker</li>
       
               </ul>
             </div>
@@ -29,33 +28,24 @@
               <div class="tab-pane fade show active" id="instructions_p39" role="tabpanel" tabindex="0">
                 <ol>
                   <li>Copy your Ground Truth file (on the mounted folder /gt)</li>
-                  <li>Implement your evaluation script (on the mounted folder /scripts)</li>
+                  <li>Implement your <a target="_blank" href='https://github.com/sergirobles/rrcevaluation/blob/master/docs/EVALUATIONSCRIPT.md'>evaluation script</a> (on the mounted folder /scripts)</li>
                   <li>If you want to show samples information, copy your samples ZIP file (on the mounted folder /gt)</li>
-                  <li>Edit the configuration</li>
-                  <li>Test API Methods</li>
-                  <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
+                  <li><a href='/configuration.html'>Edit the configuration</a></li>
+                  <li><a href='/api.html'>Test Validation and Evaluation script</a></li>
+                  <li>Verify the <a href='/results.html'></a>results page</a>. Edit your evaluation script / configuration until looks good</li>
+                  <li><a href='/export.html'>Pack and Send files to RRC</a></li>
                 </ol>
             </div>          
-              <div class="tab-pane fade" id="instructions_p" role="tabpanel" tabindex="0">
-                <ol>
-                  <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
-                  <li>Implement your evaluation script. (/scripts/script.py)</li>
-                  <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
-                  <li>Change the Docker image in the Dockerfile (and rebuild docker)</li>
-                  <li>Edit the configuration</li>
-                  <li>Test API Methods</li>
-                  <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
-                </ol>
-              </div>
       
               <div class="tab-pane fade" id="instructions_o" role="tabpanel" tabindex="0">
                 <ol>
                   <li>Copy your Ground Truth file on the mounted folder (/gt)</li>
                   <li>If you want to show samples information, copy your samples ZIP file on the mounted folder (/gt)</li>
-                  <li>Implement the evaluation docker with you prefered language. (rebuild doker)</li>
-                  <li>Edit the configuration</li>
-                  <li>Test API Methods</li>
-                  <li>Verify the results page. Edit your evaluation script / configuration until looks good</li>
+                  <li>Implement the <a target="_blank" href='https://github.com/sergirobles/rrcevaluation/blob/master/docs/EVALUATIONDOCKER.md'>evaluation docker</a> with you prefered language. (rebuild doker)</li>
+                  <li><a href='/configuration.html'>Edit the configuration</a></li>
+                  <li><a href='/api.html'>Test API Methods</a></li>
+                  <li>Verify the <a href='/results.html'></a>results page</a>. Edit your evaluation script / configuration until looks good</li>
+                  <li><a href='/export.html'>Pack and Send files to RRC</a></li>
                 </ol>
               </div>
       
@@ -68,7 +58,6 @@
 
       <div class="row">
 
-        <div class="col">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Load example</h5>
@@ -106,20 +95,7 @@
 
           </div>
 
-        </div>
-        <div class="col">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Files for RRC</h5>
-              
-              <p class="card-text">When you have your task ready, these are the files that RRC need to set it up.</p>
 
-              <div id="div_export_card_body">
-                {% include "partials/export_card.html" %}
-              </div>
-            </div>
-          </div>    
-        </div>      
 
       </div>
 

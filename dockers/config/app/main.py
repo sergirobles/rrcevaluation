@@ -181,10 +181,16 @@ async def read_item(item_id: str):
 async def index():
     template = env.get_template("index.html")
     configDict = config()
+    return template.render(page="instructions",config=configDict)
+
+@app1.get('/export.html', response_class=HTMLResponse)
+async def export():
+    template = env.get_template("export.html")
+    configDict = config()
 
     configValidDict = await validate_config()
 
-    return template.render(page="instructions",config=configDict,validations=get_validations(configDict),configValid=configValidDict["result"])
+    return template.render(page="export",config=configDict,validations=get_validations(configDict),configValid=configValidDict["result"])
 
 @app1.get('/export_card', response_class=HTMLResponse)
 async def export_card():
@@ -460,6 +466,8 @@ async def load_example( ):
 
 def delete_files():
     for file_name in os.listdir('/code/scripts'):
+        if file_name == 'README.md':
+            continue        
         # construct full file path
         file = '/code/scripts/' + file_name
         if os.path.isfile(file):
@@ -469,6 +477,8 @@ def delete_files():
             shutil.rmtree('/code/scripts/%s' % file_name)
 
     for file_name in os.listdir('/var/www/submits/'):
+        if file_name == 'README.md':
+            continue        
         # construct full file path
         file = '/var/www/submits/' + file_name
         if os.path.isfile(file):
@@ -476,6 +486,8 @@ def delete_files():
             os.remove(file)            
 
     for file_name in os.listdir('/var/www/gt/'):
+        if file_name == 'README.md':
+            continue        
         # construct full file path
         file = '/var/www/gt/' + file_name
         if os.path.isfile(file):
@@ -516,8 +528,6 @@ async def load_example( example:Optional[str] = Form(""), exampleFile: Union[Upl
                 length = int(length)
                 blockSize = max(4096, length // 20)
 
-            print("UrlLib len, blocksize: ", length, blockSize)
-
             bufferAll = io.BytesIO()
             size = 0
             while True:
@@ -531,10 +541,7 @@ async def load_example( example:Optional[str] = Form(""), exampleFile: Union[Upl
                     save_progress( "downloading example: %s %%" % percent);
 
             out_file.write(bufferAll.getbuffer())
-            print("Buffer All len:", len(bufferAll.getvalue()))
 
-            #with urllib2.urlopen(example) as response, open(zip_path, 'wb') as out_file:
-            ##shutil.copyfileobj(response, out_file)
 
     save_progress( "Extracting contents");
     with zipfile.ZipFile(zip_path) as zf:

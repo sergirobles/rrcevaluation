@@ -1,0 +1,29 @@
+{% extends "page.html" %}
+
+{% block content %}
+
+    <div class="tab-pane fade show active">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Files for RRC</h5>
+              
+              <p class="card-text">When you have your task ready, these are the files that RRC need to set it up.</p>
+
+              <div id="div_export_card_body">
+                {% include "partials/export_card.html" %}
+              </div>
+            </div>
+          </div> 
+    </div> 
+
+
+
+{% endblock %}
+
+
+
+{% block head %}
+<script src="items/instructions.js"></script>
+
+{% endblock %}   
