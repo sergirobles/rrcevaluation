@@ -4,7 +4,7 @@ To create a task for a competition held on the RRC site you have to:
 - Provide the Ground Truth
 - Implement a [Python evaluation script](docs/EVALUATIONSCRIPT.md) (the simplest way) or provide a [Docker](docs/EVALUATIONDOCKER.md) implementing a REST service
 - Provide a [task configuration file](docs/CONFIGURATION.md)
-- If you want to show samples information:
+- If you want to show detailed information for every test sample:
     - Provide samples Zip
     - Enter details on the configuration file, as the [visualization](docs/VISUALIZATION.md)
 
