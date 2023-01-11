@@ -1,185 +1,38 @@
 <div class="card">
-
-    <div class="card-body">
-
-      <h5 class="card-title">Results Evaluation</h5>    
-
-      <p class="card-text">Your evaluation script must evaluate the submited method and generate the required output defined in the task configuration.</p>
-
-      <div class="alert alert-primary" role="alert">
-        [POST] /evaluate
-      </div>  
-
-
-      <ul class="nav nav-tabs" id="evalParamsTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="eval-inputs-tab" data-bs-toggle="tab" data-bs-target="#eval-inputs-tab-pane" type="button" role="tab" aria-controls="eval-inputs-tab-pane" aria-selected="true">Input Params</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="eval-outputs-tab" data-bs-toggle="tab" data-bs-target="#eval-outputs-tab-pane" type="button" role="tab" aria-controls="eval-outputs-tab-pane" aria-selected="false">Output (JSON response)</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="eval-outputszip-tab" data-bs-toggle="tab" data-bs-target="#eval-outputszip-tab-pane" type="button" role="tab" aria-controls="eval-outputszip-tab-pane" aria-selected="false">Output (ZIP file)</button>
-        </li>
-      </ul>
-
-      <div class="tab-content" id="myEValTabContent">
-        <div class="tab-pane fade show active" id="eval-inputs-tab-pane" role="tabpanel" aria-labelledby="eval-inputs-tab" tabindex="0">
-
-      <table class="table table-striped">
-      <thead>
-      <tr>
-        <th>Param Name</th>
-        <th>Type</th>
-        <th>Optional</th>
-        <th>Description</th>
-      </tr>                  
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>gt</strong></td>
-          <td>string</td>
-          <td>Required</td>
-          <td>Internal path of the Ground Truth. RRC will call it with a value starting with /var/www/gt (the docker mounted folder)</td>
-        </tr>       
-        <tr>
-          <td>results</td>
-          <td>string</td>
-          <td>Optional *</td>
-          <td>Internal path with the results file.  (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder)</td>
-        </tr>                             
-        <tr>
-          <td>resultsFile</td>
-          <td>File</td>
-          <td>Optional</td>
-          <td>Uploaded File with the results.</td>
-        </tr>
-        <tr>
-          <td>methodParams</td>
-          <td>File</td>
-          <td>Optional</td>
-          <td>Method params in JSON.</td>
-        </tr>
-        <tr>
-          <td>evaluationScript</td>
-          <td>String</td>
-          <td>Optional</td>
-          <td>The name of the primary evaluation script used for the evaluation</td>
-        </tr>
-        <tr>
-          <td>resultsExtension</td>
-          <td>String</td>
-          <td>Optional</td>
-          <td>The extension requested for the file with results (json, jsonl ,zip or txt)</td>
-        </tr>     
-        <tr>
-          <td>calculateSamplesInfo</td>
-          <td>String</td>
-          <td>Optional</td>
-          <td>Indicates if the evaluation has to generate per sample information (1:yes)</td>
-        </tr> 
-        
-
-      </tbody>
-      </table>
-      </div>
-
-      <div class="tab-pane fade" id="eval-outputs-tab-pane" role="tabpanel" aria-labelledby="eval-outputs-tab" tabindex="0">
-
-      </table>
-      <table class="table table-striped">
-      <thead>
-      <tr>
-        <th>Param Name</th>
-        <th>Type</th>
-        <th>Optional</th>
-        <th>Description</th>
-      </tr>                  
-      </thead>
-      <tbody>
-        <tr>
-          <td>result</td>
-          <td>Boolean</td>
-          <td>Required</td>
-          <td>Determines if the method has been evaluates succesfully</td>
-        </tr>
-        <tr>
-          <td>msg</td>
-          <td>string</td>
-          <td>Optional</td>
-          <td>Error produced on the evaluation process</td>
-        </tr>
-        <tr>
-          <td>method</td>
-          <td>JSON dictionary</td>
-          <td>Required</td>
-          <td>Dictionary with the method metrics results</td>
-        </tr>        
-        <tr>
-          <td>samplesUrl</td>
-          <td>String</td>
-          <td>Optional *</td>
-          <td>URL to download the results ZIP file with samples information. *Required if you want to show samples information.</td>
-        </tr>             
-      </tbody>
-
-      </table>
-    </div>      
-    <div class="tab-pane fade" id="eval-outputszip-tab-pane" role="tabpanel" aria-labelledby="eval-outputszip-tab" tabindex="0">
-
-      <p>Your evaluation method must generate a ZIP file with the results. The contents of the ZIP file are:</p>
-    </table>
-    <table class="table table-striped">
-    <thead>
-    <tr>
-      <th>Filename</th>
-      <th>Optional</th>
-      <th>Description</th>
-    </tr>                  
-    </thead>
-    <tbody>
-      <tr>
-        <td>method.json</td>
-        <td>Required</td>
-        <td>JSON dictionary with the method results. At least all keys defined in the configuration must be present here.</td>
-      </tr>
-      <tr>
-        <td>[SAMPLE_ID].json</td>
-        <td>Optional *</td>
-        <td>JSON dictionary with the sample results. At least all keys defined in the configuration must be present here. * Required if the configuration <b>samples</b> option is enabled.</td>
-      </tr>
-    </tbody>
-
-    </table>
-    <p>The ZIP can include other files that you need for the visualization.</p>
-  </div>          
-</div>
-</div>
-</div>
-
-<div class="card mt-3">
   <div class="card-body">
   <h5 class="card-title">Test Evaluation</h5>
 
   <form method="post" enctype="multipart/form-data" action="/evaluate" id="form_evaluate">
 
-
-    <p class="card-text">
-      The parameter <strong>gt</strong> is send with the value defined in the configuration. (/var/www/gt/{{ config.gt_path }})
-    </p>
-    <p class="card-text">
-      The parameter <strong>methodParams</strong> is send with the value (<span class="methodParameters">{{ config.methodParameters }}</span>).
-    </p>
+    {% if config.docker %}
+      <p class="card-text">
+        The parameter <strong>gt</strong> is send with the value defined in the configuration. (/var/www/gt/{{ config.gt_path }})
+      </p>
+      <p class="card-text">
+        The parameter <strong>methodParams</strong> is send with the value (<span class="methodParameters">{{ config.methodParameters }}</span>).
+      </p>
+      <p class="card-text">
+        The parameter <strong>evaluationScript</strong> is send with the value ({{ config.script }}</span>).
+      </p>      
+      <p class="card-text">
+        The parameter <strong>resultsExtension</strong> is send with the value ({{ config.res_ext }}</span>).
+      </p>
+      <p class="card-text">
+        The parameter <strong>calculateSamplesInfo</strong> is send with the value ({{ 1 if config.samples==True else 0 }}</span>).
+      </p>
+    {% endif %}
 
     <input type="hidden" name="gt" class="gtField" value="">
 
     <input type="hidden" name="methodParams" class="methodParams">
 
-
+    <input type="hidden" name="evaluationScript" value="{{ config.script }}">
+    <input type="hidden" name="resultsExtension" value="{{ config.res_ext }}">
+    <input type="hidden" name="calculateSamplesInfo" value="{{ 1 if config.samples==True else 0 }}">
 
     <div class="mb-3">
       <label for="formFile" class="form-label">Select the results file</label>
-      <input class="form-control" type="file" name="resultsFile" id="formFile">
+      <input class="form-control" type="file" name="resultsFile" id="formFile" accept=".{{ config.res_ext }}">
     </div>
 
     {% if config.userParameters %}

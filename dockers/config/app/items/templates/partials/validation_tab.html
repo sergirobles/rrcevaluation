@@ -1,138 +1,35 @@
+
 <div class="card">
-        
-                  
-    <div class="card-body">
-
-      <h5 class="card-title">Results Validation</h5>    
-
-      <p class="card-text">Your evaluation script must check the correctness of the sbmition.<br>RRC machine will call this method with the params: <strong>gt</strong> and <strong>results</strong> (instead of resultsFile)</p>
-
-      <div class="alert alert-primary" role="alert">
-        [POST] /validate
-      </div>
-      
-      <ul class="nav nav-tabs" id="valParamsTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="val-inputs-tab" data-bs-toggle="tab" data-bs-target="#val-inputs-tab-pane" type="button" role="tab" aria-controls="val-inputs-tab-pane" aria-selected="true">Input Params</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="val-outputs-tab" data-bs-toggle="tab" data-bs-target="#val-outputs-tab-pane" type="button" role="tab" aria-controls="val-outputs-tab-pane" aria-selected="false">Output (JSON response)</button>
-        </li>
-
-      </ul>
-
-      <div class="tab-content" id="myValTabContent">
-        <div class="tab-pane fade show active" id="val-inputs-tab-pane" role="tabpanel" aria-labelledby="val-inputs-tab" tabindex="0">
-
-      <table class="table table-striped">
-      <thead>
-      <tr>
-        <th>Param Name</th>
-        <th>Type</th>
-        <th>Optional</th>
-        <th>Description</th>
-      </tr>                  
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>gt</strong></td>
-          <td>string</td>
-          <td>Required</td>
-          <td>Internal path of the Ground Truth. RRC will call it with a value starting with /var/www/gt (the docker mounted folder)</td>
-        </tr>       
-        <tr>
-          <td>results</td>
-          <td>string</td>
-          <td>Optional *</td>
-          <td>Internal path with the results file.  (* Required if resultsFile param is not specified.) RRC will call it with a value starting with /var/www/submits (the docker mounted folder)</td>
-        </tr>                             
-        <tr>
-          <td>resultsFile</td>
-          <td>File</td>
-          <td>Optional</td>
-          <td>Uploaded File with the results.</td>
-        </tr>
-        <tr>
-          <td>methodParams</td>
-          <td>File</td>
-          <td>Optional</td>
-          <td>Method params in JSON.</td>
-        </tr>
-        <tr>
-          <td>evaluationScript</td>
-          <td>String</td>
-          <td>Optional</td>
-          <td>The name of the primary evaluation script used for the evaluation</td>
-        </tr>
-        <tr>
-          <td>resultsExtension</td>
-          <td>String</td>
-          <td>Optional</td>
-          <td>The extension requested for the file with results (json, jsonl ,zip or txt)</td>
-        </tr>        
-
-      </tbody>
-      </table>
-      </div>
-
-      <div class="tab-pane fade" id="val-outputs-tab-pane" role="tabpanel" aria-labelledby="val-outputs-tab" tabindex="0">
-
-      </table>
-      <table class="table table-striped">
-      <thead>
-      <tr>
-        <th>Param Name</th>
-        <th>Type</th>
-        <th>Optional</th>
-        <th>Description</th>
-      </tr>                  
-      </thead>
-      <tbody>
-        <tr>
-          <td>result</td>
-          <td>Boolean</td>
-          <td>Required</td>
-          <td>Determines if the method is valid</td>
-        </tr>
-        <tr>
-          <td>msg</td>
-          <td>string</td>
-          <td>Optional</td>
-          <td>Information about the invalid method</td>
-        </tr>
-      </tbody>
-
-      </table>
-    </div>
-
-    </div>
-  </div>
-
-</div>
-
-
-
-<div class="card mt-3">
   <div class="card-body">
     <h5 class="card-title">Test validation</h5>
     <form method="post" enctype="multipart/form-data" action="/validate" id="form_validate">
 
-
-      <p class="card-text">
-        The parameter <strong>gt</strong> is send with the value defined in the configuration. (/var/www/gt/{{ config.gt_path }})
-      </p>
-      <p class="card-text">
-        The parameter <strong>methodParams</strong> is send with the value (<span class="methodParameters">{{ config.methodParameters }}</span>).
-      </p>
+      {% if config.docker %}
+        <p class="card-text">
+          The parameter <strong>gt</strong> is send with the value defined in the configuration. (/var/www/gt/{{ config.gt_path }})
+        </p>
+        <p class="card-text">
+          The parameter <strong>methodParams</strong> is send with the value (<span class="methodParameters">{{ config.methodParameters }}</span>).
+        </p>
+        <p class="card-text">
+          The parameter <strong>evaluationScript</strong> is send with the value ({{ config.script }}</span>).
+        </p>      
+        <p class="card-text">
+          The parameter <strong>resultsExtension</strong> is send with the value ({{ config.res_ext }}</span>).
+        </p>
+      {% endif %}   
 
       <input type="hidden" name="gt" class="gtField" value="">
+
+      <input type="hidden" name="evaluationScript" value="{{ config.script }}">
+      <input type="hidden" name="resultsExtension" value="{{ config.res_ext }}">
 
       <input type="hidden" name="methodParams" class="methodParams">
 
       <div class="mb-3">
         <label for="formFile" class="form-label">Select the results file</label>
 
-        <input class="form-control" type="file" name="resultsFile" id="formFile">
+        <input class="form-control" type="file" name="resultsFile" id="formFile" accept=".{{ config.res_ext }}">
       
       </div>
 
