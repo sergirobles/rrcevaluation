@@ -20,7 +20,7 @@ $(function() {
                         $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Done'));
         
                     }else{
-                        $("#div_msg_example").html( alert_danger(data.msg));
+                        $("#div_msg_example").html( alert_error(data.msg));
         
                     }
             
@@ -79,7 +79,7 @@ $(function() {
                         update_export_card();
         
                     }else{
-                        $("#div_msg_example").html( alert_danger(data.msg));
+                        $("#div_msg_example").html( alert_error(data.msg));
         
                     }
             
@@ -141,7 +141,7 @@ $(function() {
                     $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Example loaded'));
                     update_export_card();
                 }else{
-                    $("#div_msg_example").html( alert_danger(jsonResponse.msg));
+                    $("#div_msg_example").html( alert_error(jsonResponse.msg));
                     
                 }
 
