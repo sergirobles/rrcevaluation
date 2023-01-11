@@ -289,9 +289,9 @@ function edit_json_method_params (el){
                     var value = $(this).find("input[name='value']").val();
                     var name = $(this).find("input[name='name']").val();
 
-                    if (value == "true"){
+                    if (value == "true" || value == "True"){
                         value = true;
-                    }else if (value == "false"){
+                    }else if (value == "false" || value == "False"){
                         value = false;
                     }else if(value.substring(0,5)=="#str#"){
                         value = value.substring(5);
@@ -433,9 +433,9 @@ function edit_json_user_params (el){
                         var param_value = $(this).find("input[name='param_value']").val();
                         
 
-                        if (param_value == "true"){
+                        if (param_value == "true" || param_value == "True" ){
                             param_value = true;
-                        }else if (param_value == "false"){
+                        }else if (param_value == "false" || param_value == "False"){
                             param_value = false;
                         }else if(param_value.substring(0,5)=="#str#"){
                             param_value = param_value.substring(5);
@@ -728,12 +728,13 @@ function save_config(){
             out[field.name] = value
         }else if (field.name=="uploadInstructions") {
             out[field.name] = CKEDITOR.instances.inputUploadInstructions.getData();
-        }else{
+        }else if(field.name != "extra"){
             out[field.name] = field.value;    
         }
     }
     //changing to boolean
     out["samples"] = out["samples"]=="on";
+    out["docker"] = out["docker"]=="on";
 
     $("#div_task #div_msg").html( alert_info(spinner() + " Saving configuration (and installing dependencies)", true) );
     $.post("./save_config", {"config":JSON.stringify(out)},function(data){
