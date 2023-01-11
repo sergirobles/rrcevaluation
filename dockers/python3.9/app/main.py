@@ -25,7 +25,7 @@ from pydantic import BaseModel
 
 UPLOAD_FOLDER = '/var/tmp/results/'
 DOCKER_CONFIG_DOMAIN = 'http://localhost:9010'
-DOCKER_DOMAIN = 'http://host.docker.internal:9020'
+DOCKER_DOMAIN = 'http://172.17.0.1:9020'
 
 app1 = FastAPI()
 
