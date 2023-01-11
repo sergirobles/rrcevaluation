@@ -627,7 +627,7 @@ async def export():
                 zf.write(samples_path,'/gt/%s' % configDict["samples_path"])
 
             for file_name in os.listdir('/code/scripts'):
-                if file_name != '__pycache__':
+                if file_name != '__pycache__' and file_name != 'README.md':
                     if os.path.isfile('/code/scripts/%s' % file_name) == True:
                         zf.write('/code/scripts/%s' % file_name,'/scripts/%s' % file_name)
                     elif os.path.isdir('/code/scripts/%s' % file_name) == True:
