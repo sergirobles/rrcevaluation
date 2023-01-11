@@ -1,8 +1,3 @@
-function update_export_card(){
-    $.get("/export_card",function(data){
-        $("#div_export_card_body").html(data);
-    });
-}
 $(function() {
 
     $("#btnClear").click(function(){
@@ -23,7 +18,6 @@ $(function() {
                     if(data.result){
 
                         $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Done'));
-                        update_export_card();
         
                     }else{
                         $("#div_msg_example").html( alert_danger(data.msg));

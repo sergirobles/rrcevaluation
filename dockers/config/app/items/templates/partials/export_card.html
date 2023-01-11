@@ -3,11 +3,13 @@
       <li><i class="bi bi-check-circle-fill text-success"></i> Ground truth</li>
     {% else %}  
       <li><i class="bi bi-x-circle-fill text-danger"></i> Ground truth</li>
-    {% endif %}      
-    {% if validations.scriptExists %}          
-      <li><i class="bi bi-check-circle-fill text-success"></i> Python scripts (v.3.9) or your custom docker</li>
-    {% else %}  
-      <li><i class="bi bi-x-circle-fill text-warning"></i> Python scripts (v.3.9) or your custom docker</li>
+    {% endif %}
+    {% if config.docker == False %}      
+      {% if validations.scriptExists %}          
+        <li><i class="bi bi-check-circle-fill text-success"></i> Python evaluation script</li>
+      {% else %}  
+        <li><i class="bi bi-x-circle-fill text-warning"></i>Python evaluation script</li>
+      {% endif %}
     {% endif %}
     {% if validations.samplesExists %}          
       <li><i class="bi bi-check-circle-fill text-success"></i> Samples (optional)</li>
@@ -34,6 +36,5 @@
   {% if configValid and validations.methodSampleExists and validations.resultsExists %}
     <a href='/export' class="card-link btn btn-success" id="btnExport">Export zip</a>
   {% else %}
-    <button disabled class="card-link btn btn-success" id="btnExport">Export zip</button>
+    <a href='/export' class="card-link btn btn-warning" id="btnExport">Export zip (with missing files)</a>
   {% endif %}
-  <p class="mt-3">If you have customized the evaluation docker, you will have to manually export it.</p>
