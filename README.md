@@ -18,12 +18,10 @@ Start the docker project
 docker-compose up
 ```
 
-Acess to the utility
-
-[http://localhost:9010](http://localhost:9010)
+[Acess to the utility (http://localhost:9010)](http://localhost:9010)
 
 
 ## Packing files
 When you have all your scripts and configuration ready, use the **Export** button on the utility to create a ZIP with all the files needed.
 
-If you have customized or implemented a new docker, send als to the RRC another file with the docker folder.
+If you have customized or implemented a new docker, send also to the RRC another file with the docker folder.

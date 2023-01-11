@@ -1,4 +1,7 @@
-/scripts
-/gt
-/submits
+/scripts/*
+!/scripts/README.md
+/gt/*
+!/gt/README.md
+/submits/*
+!/submits/README.md
 /visualization
