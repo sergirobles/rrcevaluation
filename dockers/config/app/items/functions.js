@@ -60,7 +60,7 @@ $(function() {
         request.open("POST", "http://localhost:9020/validate");
         request.responseType = 'json';
 
-        output.innerHTML = `<div class='alert alert-info'>Please wait, validating results..</div>`   
+        output.innerHTML = `<div class='alert alert-info'>` + spinner() + `Please wait, validating results..</div>`   
 
         request.onload = (progress) => {
 
@@ -79,7 +79,16 @@ $(function() {
             }
           };
 
-        request.send(new FormData(formElement));
+          request.onerror =  (progress) =>{
+            output.innerHTML = `<div class='alert alert-danger'>An undefined error occurred when trying to upload your file. Seems a problem with the evaluation docker (see the docker logs).</div>`   
+          }
+
+          try{
+            request.send(new FormData(formElement));
+        }catch(err){
+            output.innerHTML = `<div class='alert alert-danger'>Error ${err} occurred when validating your file</div>`   
+            $("#form_evaluate input[type='submit']").prop("disabled",false);
+        }          
 
     });
 
@@ -140,7 +149,7 @@ $(function() {
             }
           };
         request.onerror = () => {
-            output.innerHTML = `<div class='alert alert-danger'>Error ${request.status} occurred when evaluating your file</div>`   
+            output.innerHTML = `<div class='alert alert-danger'>An undefined error occurred when evaluating your file. Seems a problem with the evaluation docker (see the docker logs).</div>`   
             $("#form_evaluate input[type='submit']").prop("disabled",false);
         }
 
