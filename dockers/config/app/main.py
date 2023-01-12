@@ -428,8 +428,8 @@ async def save_config( config: Optional[str] = Form("")):
     fd.write(json.dumps(jsonVar, indent=4))
     fd.close()
 
-    if os.path.exists('/var/www/submits/results.zip'):
-        os.unlink('/var/www/submits/results.zip')
+    #if os.path.exists('/var/www/submits/results.zip'):
+    #    os.unlink('/var/www/submits/results.zip')
 
     fd = open('/code/scripts/requirements.txt', "w")
     for item,value in jsonVar['scriptRequirements'].items():
