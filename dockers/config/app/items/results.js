@@ -334,7 +334,7 @@ function html_ranking(config){
 
             html += $html_row;
             
-            html += "</tbody></table>";
+            html += "</tbody></table><div id='div_graphics' class='d-flex justify-content-evenly mb-3'></div>";
         
 
             $("#div_ranking").html(html);
@@ -377,22 +377,20 @@ function html_ranking(config){
                 $rows.push(method_result);
                 $data13 = $rows;
 
-
-                $class = $num_grafic == 1 ? "ib mt20" : "ib mt20 ml10";
-                var html = "<div style='overflow:hidden;' class='" + $class + "'>";
-                    html += "<div class='panel panel-default'>";
+                var html = "<div>";
+                    html += "<div class='card'>";
                         $title = "Ranking Graphic";
                         if ($graphic_title[$num_grafic-1]!=""){
                             $title += " - " + $graphic_title[$num_grafic-1];
                         }
-                        html += "<div class='panel-heading'><h3 class='panel-title'>" + $title + "</h3></div>";
+                        html += "<div class='card-header'>" + $title + "</div>";
                         html += "<div class='panel-body'>";
                             html += "<div id='div_ranking_graphic_" + $num_grafic + "'></div>";
                         html += "</div>"; //.panel-body
                     html += "</div>"; //.panel
                 html += "</div>";
 
-                $("#div_ranking").append(html);
+                $("#div_ranking #div_graphics").append(html);
 
                 $("#div_ranking_graphic_" + $num_grafic).data({"grdata":$data13,"sort":$sort_name_long[($num_grafic-1)],"type":$sort_type[($num_grafic-1)],"format":$sort_format[($num_grafic-1)]});
 
