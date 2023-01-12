@@ -326,7 +326,7 @@ function html_ranking(config){
                     }
                 }                        
                 if ($parameter_options.grafic!=""){
-                    $data[$parameter_options.grafic-1].push(["Method",$valor_grafic]);
+                    $data[$parameter_options.grafic-1].push($valor_grafic);
                 }
             }
                 
@@ -363,17 +363,18 @@ function html_ranking(config){
                     const $parameter_options = config.methodMetrics[$parameter_name];
 
                     if ($parameter_options.grafic==$num_grafic){
-                        $fields.push("'" + $parameter_options.long_name + "'");
+                        $fields.push($parameter_options.long_name);
                     }
                 }
                 $rows.push($fields) ;
                 if($data[$num_grafic-1]==null){
                     continue;
                 }
+                var method_result = ["Method"];
                 for($i=0;$i<$data[$num_grafic-1].length;$i++){
-
-                    $rows.push($data[$num_grafic-1][$i]);
+                    method_result.push($data[$num_grafic-1][$i]);
                 }
+                $rows.push(method_result);
                 $data13 = $rows;
 
 
