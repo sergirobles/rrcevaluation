@@ -398,6 +398,21 @@ async def validate_config():
 
             archive.close()
 
+        if not 'docker' in configDict:
+            return {"result":False,"msg":"Configuration error: Missing 'docker' key"}
+
+        if configDict['docker']:
+            if not 'dockerPort' in configDict:
+                return {"result":False,"msg":"Configuration error: Missing 'dockerPort' key"}
+
+            if isinstance(configDict['dockerPort'], int) == False:
+                return {"result":False,"msg":"Configuration error: incorrect Docker Port."}            
+
+            if configDict['dockerPort'] == 9010 or configDict['dockerPort'] == 9020:
+                return {"result":False,"msg":"Configuration error: Don't use the port of the example docker."}
+
+                
+
         return {"result":True}
 
     except Exception as e:    
@@ -439,6 +454,28 @@ async def save_results( results: Union[UploadFile, None] = None):
     except Exception as e:    
         print(e)
         return {"result":False,"msg":e}       
+
+@app1.post("/save_method")
+async def save_method( method: Union[UploadFile, None] = None):
+    
+    try :
+        configDict = config()
+
+        method_path = '/var/www/submits/method.' + configDict["res_ext"]
+
+        contents = method.file.read()
+
+        fd = open(method_path, "wb")
+        fd.write(contents)
+        fd.close()
+
+        return {"result":True}
+
+    except Exception as e:    
+        print(e)
+        return {"result":False,"msg":e}       
+
+
 
 @app1.post("/download_results")
 async def download_results( url: Optional[str] = Form("")):

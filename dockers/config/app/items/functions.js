@@ -46,7 +46,45 @@ $(function() {
     });    
     
 
-   
+    function save_method(output){
+
+        const request = new XMLHttpRequest();
+        request.open("POST", "/save_method");
+        request.responseType = 'json';
+
+        output.innerHTML = alert_info(spinner() + "Method calculated & Results saved. Saving method..")
+
+        request.onload = (progress) => {        
+
+            var response = request.response;
+
+            if (response.result){
+                output.innerHTML = alert_success(`Method calculated & Results saved & Method saved` )
+            }else{
+                output.innerHTML = alert_error( `Error saving the method file ${(response.msg!=undefined? ": " + response.msg : "")}` );
+                $("#form_evaluate input[type='submit']").prop("disabled",false);
+            }
+
+        }
+
+        request.onerror = () => {
+            output.innerHTML = alert_error(`An undefined error occurred when saving the method file.`)
+            $("#form_evaluate input[type='submit']").prop("disabled",false);
+        }                
+
+        try{
+            let form = new FormData();
+            form.append("method", $("#form_evaluate #formFile")[0].files[0], "method." + configuration.res_ext );
+            request.send(form);
+
+        }catch(err){
+            output.innerHTML = alert_error(`Error ${err} occurred when saving the method file`)
+            $("#form_evaluate input[type='submit']").prop("disabled",false);
+        }
+
+ 
+
+    }
     function download_results(url,output){
         $.ajax({
             url: url,
@@ -71,14 +109,14 @@ $(function() {
                 request.open("POST", "/save_results");
                 request.responseType = 'json';
         
-                output.innerHTML = alert_info(spinner() + "Saving results..")
+                output.innerHTML = alert_info(spinner() + "Method calculated & Results downloaded. Saving results..")
         
                 request.onload = (progress) => {        
 
                     var response = request.response;
 
                     if (response.result){
-                        output.innerHTML = alert_success(`Method calculated & Sample Results saved` )
+                        save_method(output);
                     }else{
                         output.innerHTML = alert_error( `Error saving the results file ${(response.msg!=undefined? ": " + response.msg : "")}` );
                         $("#form_evaluate input[type='submit']").prop("disabled",false);
@@ -92,7 +130,6 @@ $(function() {
                 }                
 
                 try{
-
                     let form = new FormData();
                     form.append("results", blob, "results.zip");
                     request.send(form);
@@ -115,7 +152,10 @@ $(function() {
         const output = document.querySelector("#div_validate_response");
         const formElement = document.querySelector("#form_validate");
         const request = new XMLHttpRequest();
-        request.open("POST", "http://localhost:9020/validate");
+
+        let port = configuration.docker ? configuration.dockerPort : 9020;
+
+        request.open("POST", "http://localhost:" + port + "/validate");
         request.responseType = 'json';
 
         output.innerHTML = `<div class='alert alert-info'>` + spinner() + `Please wait, validating results..</div>`   
@@ -162,7 +202,10 @@ $(function() {
         const output = document.querySelector("#div_evaluate_response");
         const formElement = document.querySelector("#form_evaluate");
         const request = new XMLHttpRequest();
-        request.open("POST", "http://localhost:9020/evaluate");
+
+        let port = configuration.docker ? configuration.dockerPort : 9020;
+
+        request.open("POST", "http://localhost:" + port + "/evaluate");
         request.responseType = 'json';
 
         output.innerHTML = alert_info(spinner() + "Please wait, calculating results..")

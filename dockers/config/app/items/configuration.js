@@ -728,6 +728,14 @@ function save_config(){
             out[field.name] = value
         }else if (field.name=="uploadInstructions") {
             out[field.name] = CKEDITOR.instances.inputUploadInstructions.getData();
+        }else if(field.name == "dockerPort"){
+            if(field.value!=""){
+                if (isNaN(field.value)) {
+                    $("#div_task #div_msg").html("Docker port number not valid");
+                }else{
+                    out[field.name] = parseInt(field.value);
+                }
+            }
         }else if(field.name != "extra"){
             out[field.name] = field.value;    
         }
@@ -743,20 +751,27 @@ function save_config(){
         if(data.result){
             configuration = out;
 
-            $("#div_task #div_msg").html( alert_info(spinner() + " Installing dependencies", true) );
-            $.get("http://localhost:9020/install", function(data){
-                
-                if(data.result){
+            if(!configuration.docker){
 
-                    $("#div_task #div_msg").html(alert_success('Saved',true));
-                    $("#div_validation").html("");
-                    $("#btnValidate").prop("disabled",false);
-        
-                }else{
-                    $("#div_task #div_msg").html("Configuration saved but error installing dependecies. Error:" + data.msg + "  (try to install them manually loading http://localhost:9020/install or restarting the docker)");
-                }
-        
-            },"json");
+                $("#div_task #div_msg").html( alert_info(spinner() + " Installing dependencies", true) );
+                $.get("http://localhost:9020/install", function(data){
+                    
+                    if(data.result){
+
+                        $("#div_task #div_msg").html(alert_success('Saved',true));
+                        $("#div_validation").html("");
+                        $("#btnValidate").prop("disabled",false);
+            
+                    }else{
+                        $("#div_task #div_msg").html("Configuration saved but error installing dependecies. Error:" + data.msg + "  (try to install them manually loading http://localhost:9020/install or restarting the docker)");
+                    }
+            
+                },"json");
+            }else{
+                $("#div_task #div_msg").html(alert_success('Saved',true));
+                $("#div_validation").html("");
+                $("#btnValidate").prop("disabled",false);
+            }
 
         }else{
             $("#div_task #div_msg").html(data.msg);
