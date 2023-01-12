@@ -1,7 +1,7 @@
 # Implementing your own docker
 As working with docker, you can opt for your preferred programming language. The calculations but must be implemented on the same machine, you can’t call any external service for that purpose.
 
-With the provided utility, an evaluation docker with Python it's runing on port 9020 (folder dockers/python3.9).
+With the provided utility, an evaluation docker with Python it's runing on port 9020 (folder dockers/python3.9). **Don't modify** that docker, create a new one and enter the new port number on the configuration.
 
 Your docker must implement a REST service implementing the following 2 methods:
 
