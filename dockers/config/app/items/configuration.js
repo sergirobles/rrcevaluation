@@ -736,15 +736,27 @@ function save_config(){
     out["samples"] = out["samples"]=="on";
     out["docker"] = out["docker"]=="on";
 
-    $("#div_task #div_msg").html( alert_info(spinner() + " Saving configuration (and installing dependencies)", true) );
+    $("#div_task #div_msg").html( alert_info(spinner() + " Saving configuration", true) );
     $.post("./save_config", {"config":JSON.stringify(out)},function(data){
         
         
         if(data.result){
             configuration = out;
-            $("#div_task #div_msg").html(alert_success('Saved',true));
-            $("#div_validation").html("");
-            $("#btnValidate").prop("disabled",false);
+
+            $("#div_task #div_msg").html( alert_info(spinner() + " Installing dependencies", true) );
+            $.get("http://localhost:9020/install", function(data){
+                
+                if(data.result){
+
+                    $("#div_task #div_msg").html(alert_success('Saved',true));
+                    $("#div_validation").html("");
+                    $("#btnValidate").prop("disabled",false);
+        
+                }else{
+                    $("#div_task #div_msg").html("Configuration saved but error installing dependecies. Error:" + data.msg + "  (try to install them manually loading http://localhost:9020/install or restarting the docker)");
+                }
+        
+            },"json");
 
         }else{
             $("#div_task #div_msg").html(data.msg);

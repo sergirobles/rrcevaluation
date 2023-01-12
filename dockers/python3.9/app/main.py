@@ -25,7 +25,7 @@ from pydantic import BaseModel
 
 UPLOAD_FOLDER = '/var/tmp/results/'
 DOCKER_CONFIG_DOMAIN = 'http://localhost:9010'
-DOCKER_DOMAIN = 'http://172.17.0.1:9020'
+DOCKER_EVAL_DOMAIN = 'http://localhost:9020'
 
 app1 = FastAPI()
 
@@ -158,7 +158,7 @@ def evaluate( gt:Optional[str] = Form(""), resultsFile: Union[UploadFile, None] 
         outZip = zipfile.ZipFile(resultsOutputname, mode='w', allowZip64=True)
 
         #provide the URL to download the file
-        resDict['samplesUrl'] = DOCKER_DOMAIN + "/results/" + outputname
+        resDict['samplesUrl'] = DOCKER_EVAL_DOMAIN + "/results/" + outputname
 
         #Add samples results
         outZip.writestr('method.json',json.dumps(resDict))

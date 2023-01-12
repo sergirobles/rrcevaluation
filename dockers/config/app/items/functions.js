@@ -47,7 +47,65 @@ $(function() {
     
 
    
-      
+    function download_results(url,output){
+        $.ajax({
+            url: url,
+            cache: false,
+            xhr: function () {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 2) {
+                        if (xhr.status == 200) {
+                            xhr.responseType = "blob";
+                        } else {
+                            xhr.responseType = "text";
+                        }
+                    }
+                };
+                return xhr;
+            },success: function (data) {
+                //Convert the Byte Data to BLOB object.
+                var blob = new Blob([data], { type: "application/octetstream" });
+
+                const request = new XMLHttpRequest();
+                request.open("POST", "http://localhost:9020/save_results");
+                request.responseType = 'json';
+        
+                output.innerHTML = alert_info(spinner() + "Saving results..")
+        
+                request.onload = (progress) => {        
+
+                    var response = request.response;
+
+                    if (response.result){
+                        output.innerHTML = alert_success(spinner() + `Method calculated & Sample Results saved` )
+                    }else{
+                        output.innerHTML = alert_error( `Error saving the results file: ${response.msg}` );
+                        $("#form_evaluate input[type='submit']").prop("disabled",false);
+                    }
+
+                }
+
+                request.onerror = () => {
+                    output.innerHTML = alert_error(`An undefined error occurred when saving the results file.`)
+                    $("#form_evaluate input[type='submit']").prop("disabled",false);
+                }                
+
+                try{
+
+                    let form = new FormData();
+                    form.append("blob", blob, "results.zip");
+                    request.send(form);
+
+                }catch(err){
+                    output.innerHTML = `<div class='alert alert-danger'>Error ${err} occurred when downloading results</div>`   
+                    $("#form_evaluate input[type='submit']").prop("disabled",false);
+                }
+
+            }
+        });      
+
+    }
       
 
     $("#form_validate").submit(function(ev){
@@ -69,24 +127,24 @@ $(function() {
                 var jsonResponse = request.response;
 
                 if (jsonResponse.result){
-                    output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> The method is valid</div>`   
+                    output.innerHTML = alert_success(`<i class="bi bi-check-circle-fill"></i> The method is valid`)   
                 }else{
-                    output.innerHTML = `<div class='alert alert-danger'>Error. The method is not valid.<br><strong>${jsonResponse.msg}</strong></div>`   
+                    output.innerHTML = alert_error(`Error. The method is not valid.<br><strong>${jsonResponse.msg}</strong>`)
                 }
 
             }else{
-                output.innerHTML = `<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`   
+                output.innerHTML =  alert_error(`Error ${request.status} occurred when trying to upload your file`)
             }
           };
 
           request.onerror =  (progress) =>{
-            output.innerHTML = `<div class='alert alert-danger'>An undefined error occurred when trying to upload your file. Seems a problem with the evaluation docker (see the docker logs).</div>`   
+            output.innerHTML = alert_error(`An undefined error occurred when trying to upload your file. Seems a problem with the evaluation docker (see the docker logs).`)
           }
 
           try{
             request.send(new FormData(formElement));
         }catch(err){
-            output.innerHTML = `<div class='alert alert-danger'>Error ${err} occurred when validating your file</div>`   
+            output.innerHTML = alert_error(`Error ${err} occurred when validating your file`)
             $("#form_evaluate input[type='submit']").prop("disabled",false);
         }          
 
@@ -107,7 +165,7 @@ $(function() {
         request.open("POST", "http://localhost:9020/evaluate");
         request.responseType = 'json';
 
-        output.innerHTML = `<div class='alert alert-info'>` + spinner() + `Please wait, calculating results..</div>`   
+        output.innerHTML = alert_info(spinner() + "Please wait, calculating results..")
 
         request.onload = (progress) => {
 
@@ -116,47 +174,34 @@ $(function() {
                 var jsonResponse = request.response;
 
                 if (jsonResponse.result){
+                    if(jsonResponse.samplesUrl!=undefined){
+                        output.innerHTML = alert_info(spinner() + "Method calculated. Downloading results..")
 
-                    //if (!configuration.samples){
-                    //    output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated.</div>`   
-                    //}else{
-                        
-
-                        if(jsonResponse.samplesUrl!=undefined){
-                            output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated. Downloading results..</div>`   
-                            $.post("/download_results",{"url":jsonResponse.samplesUrl},function(data){
-                                if(data.result){
-                                    output.innerHTML = `<div class='alert alert-success'><i class="bi bi-check-circle-fill"></i> Method calculated & Sample Results Downloaded</div>`   
-                                }else{
-                                    output.innerHTML = `<div class='alert alert-danger'>Error downloading the results file. <br><strong>${data.msg}</strong></div>`   
-                                    $("#form_evaluate input[type='submit']").prop("disabled",false);
-                                }
-                            },"json");
-                        }else{
-                            output.innerHTML = `<div class='alert alert-danger'>Error. Parameter <strong>samplesUrl</strong> missing on the results</div>`   
-                            $("#form_evaluate input[type='submit']").prop("disabled",false);
-                        }
-                    //}
-
+                        download_results(jsonResponse.samplesUrl,output);
+        
+                    }else{
+                        output.innerHTML = alert_error("Error. Parameter <strong>samplesUrl</strong> missing on the results");
+                        $("#form_evaluate input[type='submit']").prop("disabled",false);
+                    }
                 }else{
-                    output.innerHTML = `<div class='alert alert-danger'>Error. The method is not valid.<br><strong>${jsonResponse.msg}</strong></div>`   
+                    output.innerHTML = alert_error(`Error. The method is not valid.<br><strong>${jsonResponse.msg}</strong>`)
                     $("#form_evaluate input[type='submit']").prop("disabled",false);
                 }
 
             }else{
                 $("#form_evaluate input[type='submit']").prop("disabled",false);
-                output.innerHTML = `<div class='alert alert-danger'>Error ${request.status} occurred when trying to upload your file</div>`   
+                output.innerHTML = alert_error(`Error ${request.status} occurred when trying to upload your file`)
             }
           };
         request.onerror = () => {
-            output.innerHTML = `<div class='alert alert-danger'>An undefined error occurred when evaluating your file. Seems a problem with the evaluation docker (see the docker logs).</div>`   
+            output.innerHTML = alert_error(`An undefined error occurred when evaluating your file. Seems a problem with the evaluation docker (see the docker logs).`)
             $("#form_evaluate input[type='submit']").prop("disabled",false);
         }
 
         try{
             request.send(new FormData(formElement));
         }catch(err){
-            output.innerHTML = `<div class='alert alert-danger'>Error ${err} occurred when evaluating your file</div>`   
+            output.innerHTML = alert_error(`Error ${err} occurred when evaluating your file`)
             $("#form_evaluate input[type='submit']").prop("disabled",false);
         }
 

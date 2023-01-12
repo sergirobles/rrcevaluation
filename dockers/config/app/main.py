@@ -421,12 +421,6 @@ async def save_config( config: Optional[str] = Form("")):
         fd.write("%s==%s\n" % (item,value))
     fd.close()
 
-    #Install PIP requirements
-    try:
-        urllib2.urlopen("http://host.docker.internal:9020/install")
-    except Exception as e:    
-        print(e)    
-
     return {"result":True}
 
 
@@ -590,13 +584,6 @@ async def load_example( example:Optional[str] = Form(""), exampleFile: Union[Upl
             shutil.copyfile(example_path + '/visualization/custom.css', '/code/items/visualization/custom/custom.css')        
             shutil.copyfile(example_path + '/visualization/custom.js', '/code/items/visualization/custom/custom.js')        
    
-
-        #Install PIP requirements
-        save_progress( "Installing requirements")
-        try:
-            urllib2.urlopen("http://host.docker.internal:9020/install")
-        except Exception as e:    
-            print(e)
 
         return {"result":True}
 

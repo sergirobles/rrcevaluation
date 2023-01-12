@@ -74,10 +74,22 @@ $(function() {
                     stopProgress();
                 
                     if(data.result){
-                        
-                        $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Example loaded'));
-                        update_export_card();
+
+                        $("#div_msg_example").html( alert_info(spinner() + " Installing dependencies", true) );
+                        $.get("http://localhost:9020/install", function(data){
+                            
+                            if(data.result){
+            
+                                $("#div_msg_example").html( alert_success('<i class="bi bi-check-circle-fill text-success"></i> Example loaded'));
+                    
+                            }else{
+                                $("#div_msg_example").html( alert_warning('<i class="bi bi-check-circle-fill text-success"></i> Example loaded but error loading dependencies. (try to install them manually loading http://localhost:9020/install or restarting the docker)'));
         
+                            }
+                    
+                        },"json");                        
+                        
+
                     }else{
                         $("#div_msg_example").html( alert_error(data.msg));
         
