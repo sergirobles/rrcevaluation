@@ -230,9 +230,11 @@ function html_ranking(config){
                 var last_title = "-";
                 for (var i=0;i<required_method_parameters.length;i++){
                     const parameter_name = required_method_parameters[i];
-                    const parameter_options = config.methodMetrics[parameter_name];
                     
                     title = arr_group_name[parameter_name];
+                    if(title==undefined){
+                        title = "";
+                    }
                     if (title != last_title){
                         if( last_title != "-"){
                             html += "<th colspan='" + num_times + "' class='text-center " + (last_title!=""? " left right" : "") + "'>" + last_title + "</th>";
@@ -334,7 +336,7 @@ function html_ranking(config){
 
             html += $html_row;
             
-            html += "</tbody></table><div id='div_graphics' class='d-flex justify-content-evenly mb-3'></div>";
+            html += "</tbody></table><div id='div_graphics' class='d-flex justify-content-evenly mb-3 flex-wrap'></div>";
         
 
             $("#div_ranking").html(html);
@@ -378,7 +380,7 @@ function html_ranking(config){
                 $data13 = $rows;
 
                 var html = "<div>";
-                    html += "<div class='card'>";
+                    html += "<div class='card mb-3'>";
                         $title = "Ranking Graphic";
                         if ($graphic_title[$num_grafic-1]!=""){
                             $title += " - " + $graphic_title[$num_grafic-1];
