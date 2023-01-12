@@ -1,0 +1,6 @@
+.your_img_class{
+    max-width: 400px !important;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}

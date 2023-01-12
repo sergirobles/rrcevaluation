@@ -137,45 +137,52 @@ function show_samples(){
     $("#div_samples .card").each(function(){
         const id = $(this).data("id");
         const $dest = $(this).find(".results");
-        $.get("./methodResults/" + id + ".json",function(data){
-            
-            html = "";
 
-            for (var i=0;i<required_sample_parameters.length;i++){
-                const $parameter_name = required_sample_parameters[i];
-                const $parameter_options = configuration.sampleMetrics[$parameter_name];
+        $.ajax({
+            url: "./methodResults/" + id + ".json",
+            respponseType: "json",
+            success: function(data) {
 
+                html = "";
 
-                if (data[$parameter_name]== null || data[$parameter_name]== undefined ) {
-
-                    html = "<div class='alert alert-danger'>The Required metric <b>" + $parameter_name + "</b> is not present on the results. Make sure your evaluation script outputs all the required metrics.</div>";
-                    break;
-
-                }else{
-
-                    let $parameter_value = data[$parameter_name]
-
-                    html += "<div class='param'>";
-                    html += $parameter_options.long_name;
+                for (var i=0;i<required_sample_parameters.length;i++){
+                    const $parameter_name = required_sample_parameters[i];
+                    const $parameter_options = configuration.sampleMetrics[$parameter_name];
 
 
+                    if (data[$parameter_name]== null || data[$parameter_name]== undefined ) {
 
-                    if ($parameter_options.format=="perc"){
-                        html += "<span class='value'>" + number_format($parameter_value*100,2) + "%</span>";
-                    }else if ($parameter_options.type=="double"){
-                        html += "<span class='value'>" + number_format($parameter_value,2) + "</span>";
+                        html = "<div class='alert alert-danger'>The Required metric <b>" + $parameter_name + "</b> is not present on the results. Make sure your evaluation script outputs all the required metrics.</div>";
+                        break;
+
                     }else{
-                        html += "<span class='value'>" + $parameter_value + "</span>";
-                    } 
 
-                    html += "</div>";
+                        let $parameter_value = data[$parameter_name]
+
+                        html += "<div class='param'>";
+                        html += $parameter_options.long_name;
+
+
+
+                        if ($parameter_options.format=="perc"){
+                            html += "<span class='value'>" + number_format($parameter_value*100,2) + "%</span>";
+                        }else if ($parameter_options.type=="double"){
+                            html += "<span class='value'>" + number_format($parameter_value,2) + "</span>";
+                        }else{
+                            html += "<span class='value'>" + $parameter_value + "</span>";
+                        } 
+
+                        html += "</div>";
+                    }
+
                 }
 
+                $dest.html(html);
+
+            },error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                $dest.html(alert_error("Error getting sample results. Make sure that " + id + ".json is present on the results ZIP"));
             }
-
-            $dest.html(html);
-
-        },"json");
+        });
     });
 
 
@@ -268,13 +275,13 @@ function html_ranking(config){
                     
                 if($parameter_options.order!=""){
                     $num_graphics = Math.max($num_graphics,$parameter_options.grafic);
-                    let $num_grafic = $parameter_options.grafic - 1;//!="2"? 0 : 1;
-                    $sort_name[$num_grafic] = $parameter_name;
-                    $sort_name_long[$num_grafic] = $parameter_options.long_name;
-                    $sort_order[$num_grafic] = $parameter_options.order;
-                    $sort_format[$num_grafic] = $parameter_options.format;
-                    $sort_type[$num_grafic] = $parameter_options.type;
-                    $graphic_title[$num_grafic] = ($parameter_options.graphic_name!=null? $parameter_options.graphic_name : "");
+                    let $num = $parameter_options.grafic - 1;//!="2"? 0 : 1;
+                    $sort_name[$num] = $parameter_name;
+                    $sort_name_long[$num] = $parameter_options.long_name;
+                    $sort_order[$num] = $parameter_options.order;
+                    $sort_format[$num] = $parameter_options.format;
+                    $sort_type[$num] = $parameter_options.type;
+                    $graphic_title[$num] = ($parameter_options.graphic_name!=null? $parameter_options.graphic_name : "");
                 }
 
 
@@ -311,15 +318,15 @@ function html_ranking(config){
                     $valor_grafic = 0;
                 }else{
                     if ($parameter_options.format=="perc"){
-                        $valor_grafic = "{v:" + $parameter_value + ", f:'" + number_format($parameter_value*100,2) + "%'}";
+                        $valor_grafic = {v: $parameter_value, f:number_format($parameter_value*100,2) + "%"};
                     }else if ($parameter_options.type=="double"){
-                        $valor_grafic = "{v:" + $parameter_value + ", f:'" + number_format($parameter_value,4) + "'}";
+                        $valor_grafic = {v: $parameter_value, f:number_format($parameter_value,4)};
                     }else{
                         $valor_grafic =  $parameter_value;
                     }
                 }                        
                 if ($parameter_options.grafic!=""){
-                    $data[$parameter_options.grafic-1].push($valor_grafic);
+                    $data[$parameter_options.grafic-1].push(["Method",$valor_grafic]);
                 }
             }
                 
@@ -344,6 +351,150 @@ function html_ranking(config){
                 $table.find("th.pv[data-n=" + current_order + "]").addClass("primary sort_" + current_direction);
                 $table.find("th.pv[data-n=" + current_order + "]").append("<i class='fa fa-sort-" + current_direction + "'></i>");        
             }            
+
+            for(var $num_grafic=1;$num_grafic<=$num_graphics;$num_grafic++){
+
+                $rows = new Array();
+                $fields = ["'Method'"];
+                $method_sort_name = "";
+                $method_sort_type = "";
+                for (var i=0;i<required_method_parameters.length;i++){
+                    const $parameter_name = required_method_parameters[i];
+                    const $parameter_options = config.methodMetrics[$parameter_name];
+
+                    if ($parameter_options.grafic==$num_grafic){
+                        $fields.push("'" + $parameter_options.long_name + "'");
+                    }
+                }
+                $rows.push($fields) ;
+                if($data[$num_grafic-1]==null){
+                    continue;
+                }
+                for($i=0;$i<$data[$num_grafic-1].length;$i++){
+
+                    $rows.push($data[$num_grafic-1][$i]);
+                }
+                $data13 = $rows;
+
+
+                $class = $num_grafic == 1 ? "ib mt20" : "ib mt20 ml10";
+                var html = "<div style='overflow:hidden;' class='" + $class + "'>";
+                    html += "<div class='panel panel-default'>";
+                        $title = "Ranking Graphic";
+                        if ($graphic_title[$num_grafic-1]!=""){
+                            $title += " - " + $graphic_title[$num_grafic-1];
+                        }
+                        html += "<div class='panel-heading'><h3 class='panel-title'>" + $title + "</h3></div>";
+                        html += "<div class='panel-body'>";
+                            html += "<div id='div_ranking_graphic_" + $num_grafic + "'></div>";
+                        html += "</div>"; //.panel-body
+                    html += "</div>"; //.panel
+                html += "</div>";
+
+                $("#div_ranking").append(html);
+
+                $("#div_ranking_graphic_" + $num_grafic).data({"grdata":$data13,"sort":$sort_name_long[($num_grafic-1)],"type":$sort_type[($num_grafic-1)],"format":$sort_format[($num_grafic-1)]});
+
+
+
+            }
+
+            var graphics = [null,null,null,null,null,null];
+            var loaded=false;
+        
+            show_graphics();
+
+
+            function init_graphic(){
+                load_graphics_api(function(){
+                    for(var i=1;i<=6;i++){
+                        if($("#div_ranking_graphic_" + i).length){
+                            graphics[i-1] = new google.visualization.ColumnChart(document.getElementById('div_ranking_graphic_' + i));
+                        }
+                    }
+                    loaded=true;
+                    show_graphics();
+                });
+            }
+
+            function load_graphics_api(callback){
+                google.load('visualization', '1',
+                {packages:['corechart'],callback:callback});
+            };            
+                
+            function show_graphics(){
+                if(!loaded){
+                    init_graphic();
+                    return;
+                }
+
+                var ranking_task_graphic_options_default = {
+                    height: 240,
+                    fontSize:12,
+                    animation:{'duration':0},
+                    title:'',
+                    backgroundColor:'transparent',
+                    chartArea:{left:50,top:20,width:350,height:180},
+                    width: 400,
+                    focusTarget:'category',
+                    legend: {position:'bottom'},
+                    vAxis:{
+                
+                        format:'none',
+                        textStyle:{fontSize: 8},
+                        //title:'%',
+                        titleTextStyle:{fontSize: 12,fontStyle:'bold'},
+                        textPosition:'out'
+                    },
+                    hAxis:{
+                        textStyle:{fontSize: 8}
+                    }
+                };
+
+                var width = $("#div_ranking").width();
+                if(graphics[1]!=null){
+                    width = width/2 -45;
+                }else{
+                    width = width -45;
+                }
+        
+                var height = 240;
+        
+        
+                for(var i=1;i<=6;i++){
+                    if(graphics[i-1]==null){
+                        break;
+                    }
+
+                    var $graphic = $("#div_ranking_graphic_" + i);
+        
+                    var ordenacio = $graphic.data("sort");
+                    var format = $graphic.data("format");
+                    var type = $graphic.data("type");
+
+
+                    var options = jQuery.extend(true, {}, ranking_task_graphic_options_default);
+                    options.animation.duration= 300;
+                    options.width= width;
+                    options.height= height;
+                    options.chartArea.width =  width-40;
+                    options.chartArea.height =  height-100;
+                    
+                    options.vAxis.format =  (format=="perc"? 'percent' : ( type!="string"? 'decimal' : 'none' ) );
+                    if(format=="perc"){
+                        options.vAxis.minValue = 0;
+                        options.vAxis.maxValue = 1;
+                    }
+        
+                    var dadesArray = $graphic.data("grdata");
+                    var dades = google.visualization.arrayToDataTable(dadesArray);
+                    options.vAxis.title =  ordenacio;
+                    graphics[i-1].draw(dades,options);
+                }
+        
+        
+            }            
+
 
 
         },"json").fail(function() {

@@ -436,6 +436,12 @@ async def save_config( config: Optional[str] = Form("")):
         fd.write("%s==%s\n" % (item,value))
     fd.close()
 
+    if jsonVar["visualization"] == "custom":
+        if os.path.exists('/code/items/visualization/custom/custom.css') == False :
+            shutil.copyfile('/code/items/visualization/visualization_custom.css', '/code/items/visualization/custom/custom.css')
+        if os.path.exists('/code/items/visualization/custom/custom.js') == False :
+            shutil.copyfile('/code/items/visualization/visualization_custom.js', '/code/items/visualization/custom/custom.js')
+
     return {"result":True}
 
 @app1.post("/save_results")
@@ -541,6 +547,15 @@ def delete_files():
             print('Deleting file:', file)
             os.remove(file)            
 
+    for file_name in os.listdir('/code/items/visualization/custom/'):
+        if file_name == 'README.md':
+            continue        
+        # construct full file path
+        file = '/code/items/visualization/custom/' + file_name
+        if os.path.isfile(file):
+            print('Deleting file:', file)
+            os.remove(file)                 
+
    
 @app1.post("/load_example")
 async def load_example( example:Optional[str] = Form(""), exampleFile: Union[UploadFile, None] = None ):
@@ -634,8 +649,10 @@ async def load_example( example:Optional[str] = Form(""), exampleFile: Union[Upl
         shutil.copyfile(example_gt_path, gt_path)        
 
         if configDict["visualization"] == "custom":
-            shutil.copyfile(example_path + '/visualization/custom.css', '/code/items/visualization/custom/custom.css')        
-            shutil.copyfile(example_path + '/visualization/custom.js', '/code/items/visualization/custom/custom.js')        
+            if os.path.exists(example_path + '/visualization/custom.css') == True and os.path.isfile(example_path + '/visualization/custom.css') == True :
+                shutil.copyfile(example_path + '/visualization/custom.css', '/code/items/visualization/custom/custom.css')
+            if os.path.exists(example_path + '/visualization/custom.css') == True and os.path.isfile(example_path + '/visualization/custom.css') == True :
+                shutil.copyfile(example_path + '/visualization/custom.css', '/code/items/visualization/custom/custom.css')
    
 
         return {"result":True}
@@ -686,8 +703,10 @@ async def export():
                 zf.write(method_path,'/submits/method.%s' % configDict["res_ext"] )
 
             if configDict["visualization"] == "custom":
-                zf.write('/code/items/visualization/custom/custom.css','/visualization/custom.css')
-                zf.write('/code/items/visualization/custom/custom.js','/visualization/custom.js')
+                if os.path.exists('/code/items/visualization/custom.css') == True and os.path.isfile('/code/items/visualization/custom.css') == True :
+                    zf.write('/code/items/visualization/custom/custom.css','/visualization/custom.css')
+                if os.path.exists('/code/items/visualization/custom.js') == True and os.path.isfile('/code/items/visualization/custom.js') == True :
+                    zf.write('/code/items/visualization/custom/custom.js','/visualization/custom.js')
 
             zf.close()
 

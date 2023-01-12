@@ -608,7 +608,7 @@ function edit_json_method_metrics(el){
     });
 
     function addColumn(title,width,info){
-        return "<th><span style='display:inline-block;width:" + width + "px;'>" + title + " <a href='#' data-toggle='tooltip' data-placement='bottom' title='" + info + "'><i class='bi bi-info-circle-fill'></i></a></span>";
+        return "<th><span style='display:inline-block;width:" + width + "px;'>" + title + " <a href='#' data-toggle='tooltip' data-html='true' data-placement='bottom' title='" + info + "'><i class='bi bi-info-circle-fill'></i></a></span>";
     }
     function html_header(){
         var html = "<tr class='param header'>";
