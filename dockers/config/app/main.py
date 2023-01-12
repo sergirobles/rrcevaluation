@@ -423,6 +423,22 @@ async def save_config( config: Optional[str] = Form("")):
 
     return {"result":True}
 
+@app1.post("/save_results")
+async def save_results( results: Union[UploadFile, None] = None):
+    results_path = '/var/www/submits/results.zip'
+
+    try :
+        contents = results.file.read()
+
+        fd = open(results_path, "wb")
+        fd.write(contents)
+        fd.close()
+
+        return {"result":True}
+
+    except Exception as e:    
+        print(e)
+        return {"result":False,"msg":e}       
 
 @app1.post("/download_results")
 async def download_results( url: Optional[str] = Form("")):

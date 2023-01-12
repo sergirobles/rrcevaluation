@@ -68,7 +68,7 @@ $(function() {
                 var blob = new Blob([data], { type: "application/octetstream" });
 
                 const request = new XMLHttpRequest();
-                request.open("POST", "http://localhost:9020/save_results");
+                request.open("POST", "/save_results");
                 request.responseType = 'json';
         
                 output.innerHTML = alert_info(spinner() + "Saving results..")
@@ -78,9 +78,9 @@ $(function() {
                     var response = request.response;
 
                     if (response.result){
-                        output.innerHTML = alert_success(spinner() + `Method calculated & Sample Results saved` )
+                        output.innerHTML = alert_success(`Method calculated & Sample Results saved` )
                     }else{
-                        output.innerHTML = alert_error( `Error saving the results file: ${response.msg}` );
+                        output.innerHTML = alert_error( `Error saving the results file ${(response.msg!=undefined? ": " + response.msg : "")}` );
                         $("#form_evaluate input[type='submit']").prop("disabled",false);
                     }
 
@@ -94,7 +94,7 @@ $(function() {
                 try{
 
                     let form = new FormData();
-                    form.append("blob", blob, "results.zip");
+                    form.append("results", blob, "results.zip");
                     request.send(form);
 
                 }catch(err){
