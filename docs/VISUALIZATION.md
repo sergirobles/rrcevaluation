@@ -69,8 +69,10 @@ For this visualization, you have to include on JSON file of the sample results t
 | gtPolPoints | array | GT bounding boxes. Each Bounding box has an array of point \[x1,y1,x2,y2, .. , xn,yn\] |
 | detPolPoints | array | Det bounding boxes. Each Bounding box has an array of point [x1,y1,x2,y2, .. , xn,yn] |
 | gtDontCare  | array | Indexes of the GT bounding boxes defined as Don't care |
-| iouMatrix |  array |  Intersection values between GT an Detection BBs. \[GT index\]\[DET index\] = Intersection value (0 to 1) |
+| detDontCare  | array | Indexes of the Detection labeled as Don't care |
+| pairs  | array | Array of relations between GT and Detection with the transcription result {"gt":GT index , "det":Det index, "correct": The detected transcription is correct (boolean) } |
+| gtTrans | array | GT bounding boxes. Each Bounding box has an array of point \[x1,y1,x2,y2, .. , xn,yn\] |
+| detTrans | array | GT bounding boxes. Each Bounding box has an array of point \[x1,y1,x2,y2, .. , xn,yn\] |
+| iouMat |  array |  Intersection values between GT an Detection BBs. \[GT index\]\[DET index\] = Intersection value (0 to 1) |
 | evaluationLog  | String | Log of important parts of the evaluation process |
 
-
-## End to End for Video (E2E_video)
