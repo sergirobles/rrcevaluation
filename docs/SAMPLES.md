@@ -29,8 +29,7 @@ Note that with regular expression you can only assign 1 image to a sample. If yo
 ## Adding a samples.json file
 Add a file named "samples.json" in your samples ZIP file that will contain the relation between the GT samples IDs and the images.
 
-Following is the JSON format of the file: [ {\"id\":\"sample1\",\"images\":[\"f1.jpg\",...]}, ... ]"}
-
+Following is the JSON format of the file:
 
 ```
 [ 
@@ -41,7 +40,14 @@ Following is the JSON format of the file: [ {\"id\":\"sample1\",\"images\":[\"f1
             "sample1-pic2.jpg",
             ...
             ]
-    },
+    }, {
+        "id":"sample2",
+        "images":[ 
+            "sample2-pic1.jpg",
+            "sample2-pic2.jpg",
+            ...
+            ]
+    }
     ...
 
 ]
