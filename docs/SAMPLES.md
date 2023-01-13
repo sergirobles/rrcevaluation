@@ -1,5 +1,5 @@
 # Samples
-To show details of the results at per sample level you will have to provide a ZIP file with your samples.
+To show details of the results at per sample level, you will have to provide a ZIP file with your samples.
 
 Include a compressed version of the samples (ex: JPG 1024px) as it's used only for the visualization part.
 
@@ -15,7 +15,7 @@ The Identificator will be the first capturing group of the regular expression.
 Examples:
 
 | Regular Expresion | Name | Match | ID |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | (.+).jpg | img_2232.jpg | True | img_2232 |
 | (.+).png | img_2232.jpg | False |  |
 | (.+).(jpg|png) | img_2232.jpg | True | img_2232 |
