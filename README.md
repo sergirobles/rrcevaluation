@@ -18,10 +18,21 @@ Start the docker project
 docker-compose up
 ```
 
+In linux you will need root permisions. You can add permsisions to your user adding your current user to docker group
+```
+sudo usermod -aG docker $USER
+```
+
+And refresh permissions in the current session
+```
+newgrp docker
+```
+
+
 [Acess to the utility (http://localhost:9010)](http://localhost:9010)
 
 
 ## Packing files
 When you have all your scripts and configuration ready, use the **Export** button on the utility to create a ZIP with all the files needed.
 
-If you have customized or implemented a new docker, send also to the RRC another file with the docker folder.
+If you have implemented a new docker, send also to the RRC another file with your docker folder.
