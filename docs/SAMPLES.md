@@ -3,7 +3,7 @@ To show details of the results at per sample level you will have to provide a ZI
 
 Include a compressed version of the samples (ex: JPG 1024px) as it's used only for the visualization part.
 
-[Here](/compression.py) you have a Python Script to compress images on a ZIP file
+[Here](./compression.py) you have a Python Script to compress images on a ZIP file
 
 You will have to add a relation between your samples and your GT keys.
 To do so you have 2 options:
