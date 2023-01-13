@@ -18,7 +18,7 @@ Examples:
 | --- | --- | --- | --- |
 | (.+).jpg | img_2232.jpg | True | img_2232 |
 | (.+).png | img_2232.jpg | False |  |
-| (.+).(jpg|png) | img_2232.jpg | True | img_2232 |
+| (.+).(jpg\|png) | img_2232.jpg | True | img_2232 |
 | img_([0-9]+).jpg | img_2232.jpg | True | 2232 |
 | (.+) | img_2232.jpg | True | img_2232.jpg |
 
