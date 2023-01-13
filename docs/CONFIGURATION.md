@@ -13,7 +13,7 @@ You have to provide a configuration JSON file about the task and the metrics exp
 | dockerPort | Int | Port of the custom docker for the evaluation  |
 | script | String | Script filename (without .py extension) of your evaluation. (placed in the /scripts/ folder) Not used if you use a custom docker. |
 | scriptRequirements | Dict | PIP requirements of your script. Specify an exact version for each requirement. Not used if you use a custom docker.  |
-| userParameters | Dict | Define parameters that user will have to manually select when uploading the results. These values will update the methodParameters param. Format: [{"paramKey":}] |
+| userParameters | Dict | Define parameters (key=>value) that user will have to manually select when uploading the results. These values will update the methodParameters param. |
 | methodParameters | Dict | Dict of parameters (key=>value) to send to the validation and evaluation API functions. |
 | methodMetrics | JSON Dict | A JSON dictionary (metric: properties) defining all the metrics expected for the method result. On the following table you have the properties for each metric.  |
 | samples | Boolean | Indicates if the evaluation gives results per sample.  |

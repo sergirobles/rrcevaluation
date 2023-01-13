@@ -23,7 +23,7 @@
                     <div class="row">
                         <div class="col-xl-6">
                         <div class="form-floating mb-4">
-                            <input type="text" name="gt_path" class="form-control" id="inputGroundTruth" maxlength="100" placeholder="Ground Truth Path" data-bs-toggle="tooltip" data-bs-title="Physical location of the GT file relative on the docker mapped folder.">
+                            <input type="text" name="gt_path" class="form-control" id="inputGroundTruth" maxlength="100" placeholder="Ground Truth Path" data-bs-toggle="tooltip" data-bs-title="Relative path of the GT file (relative on the docker gt/ mapped folder).">
                             <label for="inputGroundTruth">Ground Truth Path</label>
                         </div>
                         </div>
@@ -132,18 +132,22 @@
                 <div class="form-check form-switch mb-4">
                     <input class="form-check-input" type="checkbox" name="samples" role="switch" id="sampleResults">
                     <label class="form-check-label" for="sampleResults">Show per sample results</label>
+
+                    <a class="btn btn-light float-end" target="_blank" href='https://github.com/sergirobles/rrcevaluation/blob/master/docs/SAMPLES.md'>+ info</a>
                 </div>
         
                 <div id="div_config_samples" class="d-none">
         
+                        
+
                     <div class="form-floating mb-3">
-                        <input type="text" name="samples_path" class="form-control" id="inputSamples" maxlength="100" placeholder="Samples Path">
+                        <input type="text" name="samples_path" class="form-control" id="inputSamples" maxlength="100" placeholder="Samples Path" data-bs-toggle="tooltip" data-bs-title="Relative path of samples ZIP file (relative on the docker gt/ mapped folder).">
                         <label for="inputSamples">Samples Path</label>
                     </div>
                 
         
                     <div class="form-floating mb-4">
-                    <select class="form-select" name="samplesListType" aria-label="Samples list" id="selectSamplesListType">
+                    <select class="form-select" name="samplesListType" aria-label="Samples list" id="selectSamplesListType" data-bs-toggle="tooltip" data-bs-title="Select the method to get the samples list">
                         <option value="regexp" selected>Zip items matching a regular expresion</option>
                         <option value="samples">The samples are defined in the 'samples.json' item</option>
                         </select>

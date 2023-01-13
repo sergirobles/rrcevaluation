@@ -97,6 +97,12 @@ $(function() {
                 $("#div_samples").addClass("d-none");
             }
 
+            if(data.samples && data.samplesListType == "regexp" ){
+                $("#divSamplesRegexp").removeClass("d-none");
+              }else{
+                $("#divSamplesRegexp").addClass("d-none");
+              }            
+
             $("#switchDocker").prop("checked", data.docker);
             if(data.docker){
                 $("#div_docker").removeClass("d-none");
