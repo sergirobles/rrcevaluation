@@ -197,16 +197,18 @@ function html_ranking(config){
 
             var arr_group_name = {};
 
+            let methodResultsObj = methodResults.method== undefined ? methodResults : methodResults.method;
+
             for (var i=0;i<required_method_parameters.length;i++){
 
                 const parameter_name = required_method_parameters[i];
 
-                if(methodResults.method== undefined ){
+                if(methodResultsObj== undefined ){
                     $("#div_ranking").html("<div class='alert alert-danger'>The 'method' key is not found on the results (method.json)</div>");
                     return;
                 }
 
-                if (methodResults.method[parameter_name]== null || methodResults.method[parameter_name]== undefined ) {
+                if (methodResultsObj[parameter_name]== null || methodResultsObj[parameter_name]== undefined ) {
 
                     $("#div_ranking").html("<div class='alert alert-danger'>The Required metric <b>" + parameter_name + "</b> is not present on the results.  Make sure your evaluation script outputs all the required metrics</div>");
                     return;
@@ -301,7 +303,7 @@ function html_ranking(config){
                 const $parameter_name = required_method_parameters[i];
                 const $parameter_options = config.methodMetrics[$parameter_name];
 
-                let $parameter_value = methodResults.method[$parameter_name]
+                let $parameter_value = methodResultsObj[$parameter_name]
 
                 var $td_class = "";
                 if ( $arr_separators[$parameter_name] != undefined){
