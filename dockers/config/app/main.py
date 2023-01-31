@@ -703,9 +703,9 @@ async def export():
                 zf.write(method_path,'/submits/method.%s' % configDict["res_ext"] )
 
             if configDict["visualization"] == "custom":
-                if os.path.exists('/code/items/visualization/custom.css') == True and os.path.isfile('/code/items/visualization/custom.css') == True :
+                if os.path.exists('/code/items/visualization/custom/custom.css') == True and os.path.isfile('/code/items/visualization/custom/custom.css') == True :
                     zf.write('/code/items/visualization/custom/custom.css','/visualization/custom.css')
-                if os.path.exists('/code/items/visualization/custom.js') == True and os.path.isfile('/code/items/visualization/custom.js') == True :
+                if os.path.exists('/code/items/visualization/custom/custom.js') == True and os.path.isfile('/code/items/visualization/custom/custom.js') == True :
                     zf.write('/code/items/visualization/custom/custom.js','/visualization/custom.js')
 
             zf.close()
