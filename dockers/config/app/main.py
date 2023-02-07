@@ -11,6 +11,7 @@ import urllib.request as urllib2
 import http.cookiejar as cookielib
 import re
 import io
+import ssl
 from jinja2 import Environment, FileSystemLoader
 sys.path.append("/code/scripts/")
 
@@ -582,7 +583,11 @@ async def load_example( example:Optional[str] = Form(""), exampleFile: Union[Upl
 
         save_progress( "downloading example.." );
 
-        with urllib2.urlopen(example) as response:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE        
+
+        with urllib2.urlopen(example, context = ctx) as response:
             out_file = open(zip_path, 'wb')
             length = response.getheader('content-length')
             blockSize = 1000000  # default value            
@@ -651,8 +656,8 @@ async def load_example( example:Optional[str] = Form(""), exampleFile: Union[Upl
         if configDict["visualization"] == "custom":
             if os.path.exists(example_path + '/visualization/custom.css') == True and os.path.isfile(example_path + '/visualization/custom.css') == True :
                 shutil.copyfile(example_path + '/visualization/custom.css', '/code/items/visualization/custom/custom.css')
-            if os.path.exists(example_path + '/visualization/custom.css') == True and os.path.isfile(example_path + '/visualization/custom.css') == True :
-                shutil.copyfile(example_path + '/visualization/custom.css', '/code/items/visualization/custom/custom.css')
+            if os.path.exists(example_path + '/visualization/custom.js') == True and os.path.isfile(example_path + '/visualization/custom.js') == True :
+                shutil.copyfile(example_path + '/visualization/custom.js', '/code/items/visualization/custom/custom.js')
    
 
         return {"result":True}

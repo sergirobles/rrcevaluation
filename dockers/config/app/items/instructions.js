@@ -37,21 +37,24 @@ $(function() {
 
         show_html_modal("Import an RRC example",html,html_footer,"modal_import",false,function(){
 
-            examples = {
-                "https://www.hipicgest.com/med/rrc/IST.zip":"RRC Incidental Scene Text 2015 (45Mb.)",
-                "https://www.hipicgest.com/med/rrc/FST.zip":"RRC Focused Scene Text (Segmentation task) (125Mb.)",
-                "https://www.hipicgest.com/med/rrc/Text_in_Videos_E2E.zip":"RRC Text in Videos E2E Task (1.47Gb.)",
-                "https://www.hipicgest.com/med/rrc/SimpleExample.zip":"Simple Example"
-            }
-        
-            for( example in examples){
-                $('#ul_examples').append("<li class='list-group-item'>" + examples[example] + "</li>");
-            }
+            var examples = {};
 
-            $('#ul_examples li').on("click",function(){
-                $('#ul_examples li').not($(this)).removeClass("active");
-                $(this).toggleClass("active");
-            });
+            $.get("https://rrc.cvc.uab.es/taskCreationToolLinks.json", function(data){
+
+
+                for( var i=0;i<data.length;i++){
+                    let link = data[i];
+                    examples[link.link] = link.title;
+                    $('#ul_examples').append("<li class='list-group-item'>" + link.title + "</li>");
+                }
+
+                $('#ul_examples li').on("click",function(){
+                    $('#ul_examples li').not($(this)).removeClass("active");
+                    $(this).toggleClass("active");
+                });
+            },"json");
+        
+
 
             $("#btnImport").click(function(){
 
@@ -95,7 +98,11 @@ $(function() {
         
                     }
             
-                },"json");
+                },"json").fail(function(data){
+                    stopProgress();
+                    $("#btnImport").prop("disabled",false);
+                    $("#div_msg_example").html(`<div class='alert alert-danger'>Error ${data['responseText']} occurred when trying to upload your file</div>`);   
+                });
         
             });            
 
