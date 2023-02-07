@@ -1,0 +1,169 @@
+#div_navigation{
+    display:block; vertical-align:top;background-color:#eee;
+    padding: 8px;
+}
+#div_video_legend{
+    background-color: rgba(255,255,255,0.6);
+    z-index:9;
+    line-height: 2.4em;
+    position: absolute;
+    border: 1px solid #888;
+    margin: 8px;
+    right: 0px;
+
+}
+#div_video_legend span.color{
+    background-color: #fff;
+}
+
+#div_container_video{
+    margin: 0px auto;
+}
+#div_video_controls{
+     height:80px;    
+}
+
+#v{
+    position:fixed;left:0px;top:0px;display:none;
+}
+
+#div_sequence_gt,#div_sequence_det{
+    width:50%;
+    float:left;
+    display:none;
+}
+
+
+div.sequence{
+    margin: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #999;
+}
+div.sequence div.title{
+    border-bottom: 1px solid #999;
+    color:#000;
+    clear: both;
+    background-color: #eee;
+    padding: 4px 10px;
+}
+div.sequence div.title button{
+    margin-left: 20px;
+    float: right;
+}
+div.sequence div.title span.type{
+    font-weight: bold;
+    font-size: 9pt;
+    min-width: 80px;
+    display: inline-block;
+    text-align: center;
+}
+
+span.objId{
+    display: inline-block;
+    min-width: 110px;
+    font-size: 10pt;
+}
+
+div.sequence.not_correct div.title span.type{
+    
+   color: #f00;
+
+}
+div.sequence.dont_care div.title span.type{
+   color: #333;
+}
+div.sequence.correct div.title span.type{
+    color: #090;
+}
+
+div.sequence div.object{
+    display: inline-block;
+    margin: 5px;
+    cursor:pointer;
+    color:#fff;
+    border: 1px solid #ccc;
+}
+
+div.sequence div.object canvas{
+    margin: 0px auto;
+}
+
+div.sequence div.object.MISS span.frame,div.sequence div.object.FP span.frame{
+    background-color: #f00;
+}
+
+span.type.MISS,span.type.FP{
+    background-color: #C62828;
+}
+span.type.SWITCH{
+    background-color: #2196f3;
+}
+span.type.DC{
+    background-color: #333;
+}
+span.type.MATCH{
+    background-color: #090;
+}
+
+span.type.tracked{
+    background-color: #333;
+    margin-right: 20px;
+}
+span.type.tracked.mostly{
+    background-color: #090;
+}
+span.type.tracked.partially{
+    background-color: #ff9800;
+}
+span.type.tracked.lost{
+    background-color: #C62828;
+}
+
+#div_container_video{
+    min-height: 60vh;
+}
+
+div.clear{
+    clear:both;
+}
+
+span.type{
+    color:#fff;
+    padding: 4px;
+    margin: 4px;
+}
+
+div.sequence div.object.SWITCH span.frame{
+    background-color: #2196f3;
+}
+
+div.sequence div.object.DC span.frame{
+    background-color: #333;
+}
+div.sequence div.object.MATCH span.frame{
+    background-color: #090;
+}
+div.sequence div.object span.frame{
+    display: block;
+    text-align: center;
+    padding: 0px 4px;
+}
+
+
+span.color{
+    padding:4px;
+    border-width:3px;
+    font-weight:bold;
+    margin: 4px;
+}
+
+span.color.detection{
+    
+}
+span.color.object{
+    color:#fff;
+}
+
+.hidden{
+    display:none;
+}
