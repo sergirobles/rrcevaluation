@@ -38,8 +38,9 @@ function pad (str, max) {
 ClassVisualization.prototype.load_visualization = function(){
 
     var sampleData = this.sampleData;
+    var sampleId = this.sampleId;    
     
-    num_image = getUrlParameter("sample");
+    num_image = this.sampleNum;
     var template = "<div id='div_image_detail' style='background-color:#fff;'>" + 
         "<input type='hidden' id='inp_image_num' value='" + num_image + "' />" + 
         "<input type='hidden' id='inp_submit' value='$id_submit' />" + 
@@ -86,7 +87,7 @@ ClassVisualization.prototype.load_visualization = function(){
             "<p><span id='info'></span><span id='info2'></span></p>" +
             "<button onclick='play()' id='button_play'>Play</button>" +
             "<button onclick='pause()' id='button_pause' style='display:none;'>Pause</button>" +
-            "<span style='display:inline-block;width:500px;' id='slider'></span>" +
+            "<input type='range' min='1' max='100' value='1' class='slider' id='slider' style='display:inline-block;width:500px;'>" +
             "<button onclick='prev_frame()'>Prev</button>" +
             "<button onclick='next_frame()'>Next</button>" +
         "</div><div id='div_logs'></div>";
@@ -96,15 +97,16 @@ ClassVisualization.prototype.load_visualization = function(){
 
     sequence_loaded=false;
 
-    var video_info_url = "/gt_video_info/?ch=" + getUrlParameter("ch") + "&task=" + getUrlParameter("task") + "&eval=" + getUrlParameter("eval") + "&file=" + getUrlParameter("file")
-             + "&sample=" + num_image;
+    var videos_info_url = this.getSamplesFile("videos_info.json");
 			 
-    $.get(video_info_url,function(data){
+    $.get(videos_info_url,function(data){
         
-        videoInfo.name = data.name;
-        videoInfo.id = data.id;
-        videoInfo.fps = data.fps;
-        videoInfo.numFrames = data.frames;
+        let videoData = data[sampleId];
+
+        videoInfo.name = videoData.name;
+        videoInfo.id = videoData.id;
+        videoInfo.fps = videoData.fps;
+        videoInfo.numFrames = videoData.frames;
 		
         frames_images = new Array();
         for (var i=0;i<videoInfo.numFrames;i++){
@@ -120,8 +122,7 @@ ClassVisualization.prototype.load_visualization = function(){
 ClassVisualization.prototype.init = function(){
 	var sampleData = this.sampleData;
 
-	var video_src = "/gt_video/?ch=" + getUrlParameter("ch") + "&task=" + getUrlParameter("task") + "&eval=" + getUrlParameter("eval") + "&file=" + getUrlParameter("file")
-			 + "&sample=" + videoInfo.name + ".mp4";
+	var video_src = this.getSamplesFile(videoInfo.name + ".mp4");
 	var video = document.getElementById('v');
 	
 	video.setAttribute("src", video_src);
@@ -130,8 +131,7 @@ ClassVisualization.prototype.init = function(){
 	
 	$("#span_image_num").text(num_image);
 
-	var video_gt = "/gt_file/?ch=" + getUrlParameter("ch") + "&task=" + getUrlParameter("task") + "&eval=" + getUrlParameter("eval") + "&file=" + getUrlParameter("file") + "&gtv=" + getUrlParameter("gtv") 
-			 + "&sample=" + videoInfo.name + "_GT.xml";
+	var video_gt = this.getGTFile(videoInfo.name + "_GT.xml");
 	$.ajax({
 		"url":video_gt,
 		dataType:"xml",
@@ -195,19 +195,13 @@ ClassVisualization.prototype.init = function(){
 	
 	
 	v.addEventListener('loadedmetadata', function(){
-		$("#slider").slider({
-			min:0,
-			value:0,
-			max:v.duration*fps,
-			stop:function(event,ui){
-				console.log("slider stop() " + ui.value);
-				
-				v.currentTime = ui.value/fps;
-				//current_frame =  ui.value;
-				draw_frame();
-			}
-		});
-		//draw_frame();
+        $("#slider").prop("max",v.duration*fps);
+
+        $("#slider").change(function() {
+            current_frame = Math.round(parseFloat(this.value));
+            draw_frame();
+            
+          })
 		
 	});
 	
@@ -516,8 +510,8 @@ function load_frame_image(num_frame,callback){
         frames_images[num_frame-1] = image;
         image.onload = callback;
         
-        image.src = "/gt_video_frame/?ch=" + getUrlParameter("ch") + "&task=" + getUrlParameter("task") + "&eval=" + getUrlParameter("eval") + "&file=" + getUrlParameter("file")
-             + "&sample=" + videoInfo.name + ".mp4&frame=" + num_frame;
+        $frameNum = str_pad("" + num_frame,4,'0',"STR_PAD_LEFT");
+        image.src = visualization.getSamplesFile(videoInfo.name + "_" +  $frameNum + ".jpg");
         $("#info").html( " <span style='color:#f00;text-decoration:blink;'>loading frame image..</span>");
     }else{
         if(frames_images[num_frame-1].complete){
@@ -527,7 +521,19 @@ function load_frame_image(num_frame,callback){
         }
     }    
 }
+function str_pad(str, pad_length, pad_string, pad_type){
 
+	var len = pad_length - str.length;
+
+	if(len < 0) return str;
+  	
+	var pad = new Array(len + 1).join(pad_string);
+    
+	if(pad_type == "STR_PAD_LEFT") return pad + str;
+    
+	return str + pad;
+
+}
 var last_frame_drawed = 0;
 function draw_frame(){
     
@@ -543,7 +549,7 @@ function draw_frame(){
 			if (num_frame!=current_frame){
 				current_frame=num_frame;
 				$("#info").html("Time: " + minutes + ":"+seconds + ":" + millis + " Frame:" + num_frame + " [time:" + v.currentTime + "] <span style='color:#f00;'>reproduction might have certain displacements with the ground truth</span>");
-				$("#slider").slider("value",num_frame);
+				$("#slider").val(num_frame);
 				context.clearRect(0,0,w,h);
 				context.drawImage(v,0,0,w,h);  
 				visualization.draw_frame_objects();		
@@ -558,7 +564,7 @@ function draw_frame(){
         if(current_frame==0) return;
         $("#info").text("Frame:" + current_frame);
         
-        $("#slider").slider("value",current_frame);
+        $("#slider").val(current_frame);
         
         load_frame_image(current_frame,function(){
                context.clearRect(0,0,w,h);
