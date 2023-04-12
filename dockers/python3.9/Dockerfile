@@ -16,8 +16,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/
 
-COPY ./init.sh /code/init.sh
-
-RUN chmod +x /code/init.sh
-
-ENTRYPOINT ["/code/init.sh"]
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app1", "--bind", "0.0.0.0:80", "--workers","1", "--max-requests", "2", "-t", "0"]
