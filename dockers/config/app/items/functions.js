@@ -154,8 +154,9 @@ $(function() {
         const request = new XMLHttpRequest();
 
         let port = configuration.docker ? configuration.dockerPort : 9020;
+        let domain = configuration.docker && configuration.dockerDomain!=undefined && configuration.dockerDomain!=null && configuration.dockerDomain!="" ? configuration.dockerDomain : "http://localhost";
 
-        request.open("POST", "http://localhost:" + port + "/validate");
+        request.open("POST", domain + ":" + port + "/validate");
         request.responseType = 'json';
 
         output.innerHTML = `<div class='alert alert-info'>` + spinner() + `Please wait, validating results..</div>`   
@@ -204,8 +205,9 @@ $(function() {
         const request = new XMLHttpRequest();
 
         let port = configuration.docker ? configuration.dockerPort : 9020;
+        let domain = configuration.docker && configuration.dockerDomain!=undefined && configuration.dockerDomain!=null && configuration.dockerDomain!="" ? configuration.dockerDomain : "http://localhost";
 
-        request.open("POST", "http://localhost:" + port + "/evaluate");
+        request.open("POST", domain + ":" + port + "/evaluate");
         request.responseType = 'json';
 
         output.innerHTML = alert_info(spinner() + "Please wait, calculating results..")

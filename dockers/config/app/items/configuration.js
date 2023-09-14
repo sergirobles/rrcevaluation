@@ -108,6 +108,7 @@ $(function() {
                 $("#div_docker").removeClass("d-none");
                 $("#div_no_docker").addClass("d-none");
                 $("#inputDockerPort").val(data.dockerPort);
+                $("#inputDockerDomain").val(data.dockerDomain);
             }else{
                 $("#div_docker").addClass("d-none");
                 $("#div_no_docker").removeClass("d-none");

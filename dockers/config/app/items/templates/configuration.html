@@ -80,7 +80,12 @@
                         <div class="alert alert-danger">You will have to implement your own docker. See insructions <a target="_blank" href="https://github.com/sergirobles/rrcevaluation/blob/master/docs/EVALUATIONDOCKER.md">here</a>.</div>
 
                         <div class="form-floating mb-4">
-                            <input type="number" step="1" max="9999" name="dockerPort" class="form-control" id="inputDockerPort" maxlength="100" placeholder="Task Title" data-bs-toggle="tooltip" data-bs-title="Port of the evaluation docker">
+                            <input type="text" name="dockerDomain" class="form-control" id="inputDockerDomain" maxlength="100" placeholder="Hostname" data-bs-toggle="tooltip" data-bs-title="Hostname of the evaluation docker">
+                            <label for="inputDockerDomain">Hostname</label>
+                        </div>                        
+
+                        <div class="form-floating mb-4">
+                            <input type="number" step="1" max="9999" name="dockerPort" class="form-control" id="inputDockerPort" maxlength="100" placeholder="Port number" data-bs-toggle="tooltip" data-bs-title="Port of the evaluation docker">
                             <label for="inputDockerPort">Port number</label>
                         </div>                        
                     </div>

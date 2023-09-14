@@ -412,7 +412,12 @@ async def validate_config():
             if configDict['dockerPort'] == 9010 or configDict['dockerPort'] == 9020:
                 return {"result":False,"msg":"Configuration error: Don't use the port of the example docker."}
 
-                
+            if 'dockerDomain' in configDict:
+                if configDict['dockerDomain'] != "" :
+                    if not configDict['dockerDomain'].startswith("http://") and not configDict['dockerDomain'].startswith("https://") :
+                        return {"result":False,"msg":"Configuration error: Docker hostname must start with 'http://' or 'https://."}
+                    if configDict['dockerDomain'].endswith("/") :
+                        return {"result":False,"msg":"Configuration error: Docker hostname can't end with slash"}
 
         return {"result":True}
 
