@@ -344,7 +344,8 @@ async def validate_config():
         gt_file = "/var/www/gt/%s" % configDict['gt_path']
 
         if os.path.isfile(gt_file) == False:
-            return {"result":False,"msg":"Ground truth file not exists"}
+            if 'docker' in configDict and configDict['docker'] == False:
+                return {"result":False,"msg":"Ground truth file not exists"}
 
         if not 'methodMetrics' in configDict:
             return {"result":False,"msg":"Configuration error: Missing 'methodMetrics' key"}
